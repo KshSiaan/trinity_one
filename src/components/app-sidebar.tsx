@@ -1,21 +1,23 @@
 "use client";
+import React from "react";
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
+  BarChartBig,
+  BellIcon,
+  BuildingIcon,
+  ClipboardListIcon,
   Frame,
-  GalleryVerticalEnd,
+  LayoutDashboardIcon,
   MapIcon,
   PieChart,
   Settings2,
+  ShapesIcon,
+  SquareKanbanIcon,
   SquareTerminal,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
-import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
+
 import {
   Sidebar,
   SidebarContent,
@@ -27,166 +29,87 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 
-// This is sample data.
+// sample data
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
     {
       title: "Settings",
       url: "#",
       icon: Settings2,
       items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
+        { title: "General", url: "#" },
+        { title: "Team", url: "#" },
+        { title: "Billing", url: "#" },
+        { title: "Limits", url: "#" },
       ],
     },
   ],
   projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: MapIcon,
-    },
+    { name: "Design Engineering", url: "#", icon: LayoutDashboardIcon },
+    { name: "Companies", url: "#", icon: BuildingIcon },
+    { name: "Analytics", url: "#", icon: BarChartBig },
+    { name: "Reports", url: "#", icon: ClipboardListIcon },
+    { name: "Category", url: "#", icon: ShapesIcon },
+    { name: "Notifications", url: "#", icon: BellIcon },
+    { name: "ROI Tracker", url: "#", icon: SquareKanbanIcon },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // placeholder during SSR → avoids flicker/mismatch
+    return (
+      <Sidebar variant="sidebar" className="py-6" collapsible="icon" {...props}>
+        <SidebarHeader>
+          <div className="h-20 w-full border rounded-lg"></div>
+        </SidebarHeader>
+        <SidebarContent>
+          <NavProjects projects={data.projects} />
+          <NavMain items={data.navMain} />
+        </SidebarContent>
+        <SidebarFooter>
+          <div className="py-2 h-16 border px-2 rounded-full relative bg-zinc-200" />
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+    );
+  }
+
+  const currentTheme = theme === "system" ? resolvedTheme : theme;
+
   return (
     <Sidebar variant="sidebar" className="py-6" collapsible="icon" {...props}>
       <SidebarHeader>
         <div className="h-20 w-full border rounded-lg"></div>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
+        <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        {/* <NavUser user={data.user} /> */}
         <div
           className={cn(
-            "py-2 h-16 border px-2 rounded-full relative",
-            resolvedTheme === "light" ? "bg-sky-300" : "bg-zinc-900"
+            "py-2 h-16 border px-2 rounded-full relative transition-colors",
+            currentTheme === "light" ? "bg-sky-300" : "bg-zinc-900"
           )}
-          suppressHydrationWarning
         >
           <Button
             className={cn(
-              "rounded-full! p-2! aspect-square size-12 bg-white hover:bg-zinc-100! absolute top-2 transition-all",
-              resolvedTheme === "light" ? "left-2" : "right-2"
+              "rounded-full p-2 aspect-square size-12 bg-white hover:bg-zinc-100 absolute top-2 transition-all",
+              currentTheme === "light" ? "left-2" : "right-2"
             )}
             onClick={() => {
-              setTheme(resolvedTheme === "light" ? "dark" : "light");
+              setTheme(currentTheme === "light" ? "dark" : "light");
             }}
-            size={"icon"}
-          ></Button>
+            size="icon"
+          />
         </div>
       </SidebarFooter>
       <SidebarRail />

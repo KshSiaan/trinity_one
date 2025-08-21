@@ -18,8 +18,8 @@ export default function Layout({
   return (
     <SidebarProvider className=" rounded-r-2xl border-0">
       <AppSidebar />
-      <SidebarInset>
-        <header className="shadow border rounded-xl flex h-24 mb-4! m-6 shrink-0 pr-4 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+      <SidebarInset className="bg-secondary">
+        <header className="shadow border bg-background rounded-xl flex h-24 mb-4! m-6 shrink-0 pr-4 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center w-full justify-between gap-2 px-4">
             <div className="flex items-center">
               <SidebarTrigger className="-ml-1" />
