@@ -33,7 +33,7 @@ export default function Layout({
               <div className="flex flex-row justify-between items-center px-2 rounded-md border">
                 <SearchIcon className="text-muted-foreground" />
                 <Input
-                  className="border-0! shadow-none! bg-transparent outline-0!"
+                  className="border-0! shadow-none! bg-transparent! ring-0! outline-0!"
                   placeholder="Search.."
                 />
               </div>

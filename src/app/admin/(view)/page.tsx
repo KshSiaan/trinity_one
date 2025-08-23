@@ -74,7 +74,7 @@ export default function Page() {
                 <div className="bg-purple-400 size-10 rounded-full flex justify-around items-center">
                   <x.icon className="size-5 text-background" />
                 </div>
-                <span className="text-2xl">{x.amm}</span>
+                <span className="text-2xl ">{x.amm}</span>
               </div>
               <div className="h-full flex justify-end items-end">
                 <div className="flex items-center text-green-600 text-sm">

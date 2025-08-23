@@ -5,14 +5,10 @@ import {
   BellIcon,
   BuildingIcon,
   ClipboardListIcon,
-  Frame,
   LayoutDashboardIcon,
-  MapIcon,
-  PieChart,
   Settings2,
   ShapesIcon,
   SquareKanbanIcon,
-  SquareTerminal,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -28,7 +24,7 @@ import {
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
-
+const prefix = "/admin";
 // sample data
 const data = {
   navMain: [
@@ -37,21 +33,19 @@ const data = {
       url: "#",
       icon: Settings2,
       items: [
-        { title: "General", url: "#" },
-        { title: "Team", url: "#" },
-        { title: "Billing", url: "#" },
-        { title: "Limits", url: "#" },
+        { title: "Account", url: `${prefix}/account` },
+        { title: "Terms & Conditions", url: `${prefix}/tnc` },
       ],
     },
   ],
   projects: [
-    { name: "Design Engineering", url: "#", icon: LayoutDashboardIcon },
-    { name: "Companies", url: "#", icon: BuildingIcon },
-    { name: "Analytics", url: "#", icon: BarChartBig },
-    { name: "Reports", url: "#", icon: ClipboardListIcon },
-    { name: "Category", url: "#", icon: ShapesIcon },
-    { name: "Notifications", url: "#", icon: BellIcon },
-    { name: "ROI Tracker", url: "#", icon: SquareKanbanIcon },
+    { name: "Dashboard", url: `${prefix}`, icon: LayoutDashboardIcon },
+    { name: "Companies", url: `${prefix}/companies`, icon: BuildingIcon },
+    { name: "Analytics", url: `${prefix}/analytics`, icon: BarChartBig },
+    { name: "Reports", url: `${prefix}/reports`, icon: ClipboardListIcon },
+    { name: "Category", url: `${prefix}/category`, icon: ShapesIcon },
+    { name: "Notifications", url: `${prefix}/notif`, icon: BellIcon },
+    { name: "ROI Tracker", url: `${prefix}/roi`, icon: SquareKanbanIcon },
   ],
 };
 
