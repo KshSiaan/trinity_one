@@ -24,6 +24,7 @@ import {
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 const prefix = "/admin";
 // sample data
 const data = {
@@ -81,7 +82,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="sidebar" className="py-6" collapsible="icon" {...props}>
       <SidebarHeader>
-        <div className="h-20 w-full border rounded-lg"></div>
+        <div className="h-20 w-full flex justify-center items-center">
+          <Image
+            src={"/logo-db.png"}
+            height={200}
+            width={200}
+            className="h-full object-contain"
+            alt="logo"
+          />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <NavProjects projects={data.projects} />
@@ -93,20 +102,40 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             "py-2 h-16 border px-2 rounded-full relative transition-colors",
             currentTheme === "light" ? "bg-sky-300" : "bg-zinc-900"
           )}
+          onClick={() => {
+            setTheme(currentTheme === "light" ? "dark" : "light");
+          }}
         >
           <Button
             className={cn(
               "rounded-full p-2 aspect-square size-12 bg-white hover:bg-zinc-100 absolute top-2 transition-all",
               currentTheme === "light" ? "left-2" : "right-2"
             )}
-            onClick={() => {
-              setTheme(currentTheme === "light" ? "dark" : "light");
-            }}
             size="icon"
           />
+          <div className="w-full h-full flex flex-row justify-between">
+            <div className="size-12 p-2 flex justify-center items-center">
+              <Image
+                src={"/moon.svg"}
+                height={64}
+                width={64}
+                alt="moon"
+                className="h-full w-full"
+              />
+            </div>
+            <div className="size-12 p-2 flex justify-center items-center">
+              <Image
+                src={"/sun.svg"}
+                height={64}
+                width={64}
+                alt="moon"
+                className="h-full w-full"
+              />
+            </div>
+          </div>
         </div>
       </SidebarFooter>
-      <SidebarRail />
+      {/* <SidebarRail /> */}
     </Sidebar>
   );
 }

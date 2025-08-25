@@ -33,6 +33,7 @@ import {
   SearchIcon,
   Trash2Icon,
 } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function Page() {
@@ -41,8 +42,10 @@ export default function Page() {
       <Card>
         <CardHeader className=" flex justify-between items-center">
           <CardTitle className="text-2xl">Companies</CardTitle>
-          <Button>
-            <PlusIcon /> Add Company
+          <Button asChild>
+            <Link href={"companies/add"}>
+              <PlusIcon /> Add Company
+            </Link>
           </Button>
         </CardHeader>
         <CardContent className="">

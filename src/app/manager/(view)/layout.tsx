@@ -1,3 +1,4 @@
+import { AppSidebar } from "@/components/manager-sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +8,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/admin-sidebar";
+
 import { BellIcon, SearchIcon } from "lucide-react";
 
 export default function Layout({

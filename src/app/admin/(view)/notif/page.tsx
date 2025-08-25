@@ -8,7 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Pagination,
   PaginationContent,
@@ -26,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 import {
   EditIcon,
   EyeIcon,
@@ -41,9 +51,34 @@ export default function Page() {
       <Card>
         <CardHeader className=" flex justify-between items-center">
           <CardTitle className="text-2xl">Manage Notification</CardTitle>
-          <Button>
-            <PlusIcon /> Create Notification
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>
+                <PlusIcon /> Create Notification
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create Notification</DialogTitle>
+              </DialogHeader>
+              <div className="w-full space-y-6">
+                <Label>Name</Label>
+                <Input />
+                <Label>Message</Label>
+                <Textarea />
+                <Label>Target Audience</Label>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="All Users" />
+                  </SelectTrigger>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button variant={"secondary"}>Save as Draft</Button>
+                <Button>Send Now</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </CardHeader>
         <CardContent className="">
           <div className="mt-6 w-full">
