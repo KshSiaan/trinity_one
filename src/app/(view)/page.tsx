@@ -86,17 +86,23 @@ export default function Page() {
             <Button
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              asChild
             >
-              Admin Login
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <Link href="/admin/login">
+                Admin Login
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
               className="border-border hover:bg-muted bg-transparent"
+              asChild
             >
-              Manager Login
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <Link href={"/manager/login"}>
+                Manager Login
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
             </Button>
           </div>
         </div>
