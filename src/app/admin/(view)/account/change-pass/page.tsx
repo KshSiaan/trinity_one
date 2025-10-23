@@ -9,8 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { changePasswordApi, updatePasswordApi } from "@/lib/api/auth";
+import { idk } from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
 import React, { useState } from "react";
+import { useCookies } from "react-cookie";
+import { toast } from "sonner";
 
 function PasswordField({
   label,
@@ -47,10 +52,30 @@ function PasswordField({
 }
 
 export default function Page() {
+  const [{ token }] = useCookies(["token"]);
   const [current, setCurrent] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirm, setConfirm] = useState("");
 
+  const { mutate } = useMutation({
+    mutationKey: ["change_pass"],
+    mutationFn: () => {
+      return updatePasswordApi({
+        body: {
+          current_password: current,
+          password: newPass,
+          password_confirmation: confirm,
+        },
+        token,
+      });
+    },
+    onError: (err) => {
+      toast.error(err.message ?? "Failed to complete this request");
+    },
+    onSuccess: (res: idk) => {
+      toast.success(res.message ?? "Success!");
+    },
+  });
   return (
     <section className="w-full mx-auto mt-10">
       <Card>
@@ -75,7 +100,13 @@ export default function Page() {
           />
         </CardContent>
         <CardFooter className="w-full">
-          <Button className="w-full" size="lg">
+          <Button
+            className="w-full"
+            size="lg"
+            onClick={() => {
+              mutate();
+            }}
+          >
             Update password
           </Button>
         </CardFooter>

@@ -97,44 +97,44 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <div
+        <button
+          type="button"
+          aria-label="Toggle theme"
           className={cn(
-            "py-2 h-16 border px-2 rounded-full relative transition-colors",
+            "py-2 h-16 border px-2 rounded-full relative transition-colors w-full",
             currentTheme === "light" ? "bg-sky-300" : "bg-zinc-900"
           )}
-          onClick={() => {
-            setTheme(currentTheme === "light" ? "dark" : "light");
-          }}
+          onClick={() => setTheme(currentTheme === "light" ? "dark" : "light")}
         >
-          <Button
+          <div
             className={cn(
               "rounded-full p-2 aspect-square size-12 bg-white hover:bg-zinc-100 absolute top-2 transition-all",
               currentTheme === "light" ? "left-2" : "right-2"
             )}
-            size="icon"
           />
           <div className="w-full h-full flex flex-row justify-between">
             <div className="size-12 p-2 flex justify-center items-center">
               <Image
-                src={"/moon.svg"}
+                src="/moon.svg"
                 height={64}
                 width={64}
-                alt="moon"
+                alt="moon icon"
                 className="h-full w-full"
               />
             </div>
             <div className="size-12 p-2 flex justify-center items-center">
               <Image
-                src={"/sun.svg"}
+                src="/sun.svg"
                 height={64}
                 width={64}
-                alt="moon"
+                alt="sun icon"
                 className="h-full w-full"
               />
             </div>
           </div>
-        </div>
+        </button>
       </SidebarFooter>
+
       {/* <SidebarRail /> */}
     </Sidebar>
   );

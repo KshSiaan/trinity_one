@@ -1,20 +1,23 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/admin-sidebar";
 import { BellIcon, SearchIcon } from "lucide-react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import LogoutButton from "@/components/ui/logout-button";
+import HeaderProfSection from "@/components/core/header-profile-section";
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const token = (await cookies()).get("token")?.value;
+  if (!token) {
+    return redirect("/admin/login");
+  }
+
   return (
     <SidebarProvider className=" rounded-r-2xl border-0">
       <AppSidebar />
@@ -22,11 +25,6 @@ export default function Layout({
         <header className="shadow border bg-background rounded-xl flex h-24 mb-4! m-6 shrink-0 pr-4 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center w-full justify-between gap-2 px-4">
             <div className="flex items-center">
-              {/* <SidebarTrigger className="-ml-1" /> */}
-              {/* <Separator
-                orientation="vertical"
-                className="mr-2 data-[orientation=vertical]:h-4"
-              /> */}
               <h2 className="text-xl font-semibold">Dashboard Overview</h2>
             </div>
             <div className="flex items-center gap-4">
@@ -40,18 +38,8 @@ export default function Layout({
               <Button size={"icon"} variant={"ghost"}>
                 <BellIcon />
               </Button>
-              <div className="flex flex-row gap-4 justify-center items-center">
-                <Avatar>
-                  <AvatarImage src={"https://avatar.iran.liara.run/public"} />
-                  <AvatarFallback>UI</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col justify-center items-start">
-                  <p className="font-semibold">Admin User</p>
-                  <p className="text-muted-foreground text-xs">
-                    admin@gmail.com
-                  </p>
-                </div>
-              </div>
+              <HeaderProfSection />
+              <LogoutButton />
             </div>
           </div>
         </header>

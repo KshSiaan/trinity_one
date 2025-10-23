@@ -1,7 +1,9 @@
+import HeaderProfSection from "@/components/core/header-profile-section";
 import { AppSidebar } from "@/components/manager-sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import LogoutButton from "@/components/ui/logout-button";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -10,12 +12,19 @@ import {
 } from "@/components/ui/sidebar";
 
 import { BellIcon, SearchIcon } from "lucide-react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const token = (await cookies()).get("token")?.value;
+
+  if (!token) {
+    return redirect("/manager/login");
+  }
   return (
     <SidebarProvider className=" rounded-r-2xl border-0">
       <AppSidebar />
@@ -41,18 +50,8 @@ export default function Layout({
               <Button size={"icon"} variant={"ghost"}>
                 <BellIcon />
               </Button>
-              <div className="flex flex-row gap-4 justify-center items-center">
-                <Avatar>
-                  <AvatarImage src={"https://avatar.iran.liara.run/public"} />
-                  <AvatarFallback>UI</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col justify-center items-start">
-                  <p className="font-semibold">Admin User</p>
-                  <p className="text-muted-foreground text-xs">
-                    admin@gmail.com
-                  </p>
-                </div>
-              </div>
+              <HeaderProfSection />
+              <LogoutButton />
             </div>
           </div>
         </header>

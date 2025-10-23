@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Poppins } from "next/font/google";
+import TanstackProvider from "@/provider/query-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const poppins = Poppins({
   subsets: ["latin"],
@@ -22,16 +24,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${poppins.className} bg-gradient-to-br from-[#17A14C1A] to-[#8E37E41A] antialiased`}
-      >
+      <body className={`${poppins.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <TanstackProvider>
+            {children}
+            <Toaster position="top-center" />
+          </TanstackProvider>
         </ThemeProvider>
       </body>
     </html>
