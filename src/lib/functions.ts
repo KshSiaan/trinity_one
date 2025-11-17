@@ -28,6 +28,7 @@ export function imgCreator(x:string):string{
     }    
     return `${base_server}/${x}`
 }
+
 export function timeSumUp(time: string, duration: number): string {
   // time = ISO string (e.g. "2025-08-28T12:38:00.000Z")
   const base = new Date(time);

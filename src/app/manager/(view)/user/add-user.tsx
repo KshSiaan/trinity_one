@@ -12,7 +12,6 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -21,42 +20,90 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Camera, PlusIcon, Upload } from "lucide-react";
-import Image from "next/image";
+import { Loader2Icon, PlusIcon } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useCookies } from "react-cookie";
+import { howl, idk } from "@/lib/utils";
 
-const schema = z.object({
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { createUserApi } from "@/lib/api/manager";
+
+const userSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email"),
   role: z.string().min(1, "Role is required"),
   department: z.string().min(1, "Department is required"),
   status: z.string().min(1, "Status is required"),
-  sendWelcome: z.boolean(), // ✅ always boolean
+  sendWelcome: z.boolean(),
+  employeePin: z
+    .string()
+    .min(1, "Employee code is required")
+    .regex(/^\d+$/, "Employee code must be numeric"),
 });
 
-type FormData = z.infer<typeof schema>;
+type UserFormData = z.infer<typeof userSchema>;
 
 export function AddUserDialog() {
   const [open, setOpen] = React.useState(false);
-  const form = useForm<FormData>({
-    resolver: zodResolver(schema),
+  const [avatarFile, setAvatarFile] = React.useState<File | null>(null);
+  const [{ token }] = useCookies(["token"]);
+
+  const { data, isPending } = useQuery({
+    queryKey: ["departments"],
+    queryFn: (): idk => howl(`/department/index`, { method: "GET", token }),
+  });
+  const { mutate } = useMutation({
+    mutationKey: ["create_user"],
+    mutationFn: (formData: FormData) => {
+      return createUserApi(formData, token);
+    },
+    onError: (err) => {
+      toast.error(err.message ?? "Failed to complete this request");
+    },
+    onSuccess: (res: idk) => {
+      toast.success(res.message ?? "Success!");
+    },
+  });
+  const form = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
     defaultValues: {
       name: "",
       email: "",
       role: "",
       department: "",
       status: "",
-      sendWelcome: true, // ✅ consistent with schema
+      sendWelcome: true,
+      employeePin: "",
     },
   });
-  function onSubmit(values: FormData) {
-    console.log({
-      ...values,
-      employeeCode: `EMP-${Date.now().toString().slice(-6)}`, // auto-gen
-    });
+
+  const onSubmit = (values: UserFormData) => {
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("email", values.email);
+    formData.append("role", values.role.toUpperCase());
+    formData.append(
+      "department_id",
+      values.department === "it" ? "1" : values.department === "hr" ? "2" : "3"
+    );
+    formData.append("status", values.status);
+    formData.append("send_welcome_email", values.sendWelcome ? "1" : "0");
+    formData.append("employee_pin", values.employeePin);
+    if (avatarFile) formData.append("avatar", avatarFile);
+    console.log("FormData entries:");
+    for (const pair of formData.entries()) console.log(pair[0], pair[1]);
     setOpen(false);
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -71,139 +118,195 @@ export function AddUserDialog() {
           <DialogTitle>Add New User</DialogTitle>
         </DialogHeader>
 
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-2 gap-6"
-        >
-          {/* Avatar + Upload */}
-          <div className="col-span-2 flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-200">
-              <Image
-                src="/placeholder-avatar.png"
-                alt="avatar"
-                fill
-                className="object-cover"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid grid-cols-2 gap-6"
+          >
+            {/* Avatar Upload */}
+            <div className="col-span-2 flex items-center gap-4 mb-4">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-200">
+                {avatarFile && (
+                  <img
+                    src={URL.createObjectURL(avatarFile)}
+                    alt="avatar"
+                    className="w-16 h-16 object-cover rounded-full"
+                  />
+                )}
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
               />
-              <button
+            </div>
+
+            {/* Name */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Role */}
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USER">User</SelectItem>
+                        <SelectItem value="MENTOR">Mentor</SelectItem>
+                        <SelectItem value="EMPLOYEE">Employee</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Department */}
+            <FormField
+              control={form.control}
+              name="department"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Department</FormLabel>
+                  <FormControl>
+                    {isPending ? (
+                      <div className="flex justify-center items-center h-12">
+                        <Loader2Icon className="animate-spin" />
+                      </div>
+                    ) : (
+                      <Select
+                        value={field.value || ""}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select Department" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {data?.data?.map((dept: any) => (
+                            <SelectItem key={dept.id} value={String(dept.id)}>
+                              {dept.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Status */}
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Employee Code */}
+            <FormField
+              control={form.control}
+              name="employeePin"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Employee Code <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Enter employee code" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Welcome Email */}
+            <FormField
+              control={form.control}
+              name="sendWelcome"
+              render={({ field }) => (
+                <FormItem className="col-span-2 flex items-center gap-2 mt-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={(v) => field.onChange(!!v)}
+                    />
+                  </FormControl>
+                  <span className="text-sm text-muted-foreground">
+                    Send account activation instructions
+                  </span>
+                </FormItem>
+              )}
+            />
+
+            {/* Footer */}
+            <DialogFooter className="col-span-2 flex justify-end gap-3">
+              <Button
                 type="button"
-                className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow"
+                variant="outline"
+                onClick={() => setOpen(false)}
               >
-                <Camera className="w-4 h-4" />
-              </button>
-            </div>
-            <Button type="button" variant="outline" className="gap-2">
-              <Upload className="w-4 h-4" />
-              Upload Photo
-            </Button>
-          </div>
-
-          {/* Name */}
-          <div>
-            <Label>Name</Label>
-            <Input {...form.register("name")} />
-          </div>
-
-          {/* Email */}
-          <div>
-            <Label>Email address</Label>
-            <Input {...form.register("email")} />
-          </div>
-
-          {/* Role */}
-          <div>
-            <Label>Role</Label>
-            <Select
-              onValueChange={(v) => form.setValue("role", v)}
-              defaultValue={form.getValues("role")}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="manager">Manager</SelectItem>
-                <SelectItem value="employee">Employee</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Department */}
-          <div>
-            <Label>Department</Label>
-            <Select
-              onValueChange={(v) => form.setValue("department", v)}
-              defaultValue={form.getValues("department")}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Department" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="it">IT</SelectItem>
-                <SelectItem value="hr">HR</SelectItem>
-                <SelectItem value="finance">Finance</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Status */}
-          <div>
-            <Label>Status</Label>
-            <Select
-              onValueChange={(v) => form.setValue("status", v)}
-              defaultValue={form.getValues("status")}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Employee Code */}
-          <div>
-            <Label>
-              Employee Code <span className="text-red-500">*</span>
-            </Label>
-            <Input value="Auto generated upon save" disabled />
-            <p className="text-xs text-muted-foreground mt-1">
-              This code will be used by employees to join this company
-            </p>
-          </div>
-
-          {/* Welcome Email */}
-          <div className="col-span-2">
-            <Label>Send Welcome Email</Label>
-            <div className="flex items-center gap-2 mt-1">
-              <Checkbox
-                checked={form.watch("sendWelcome")}
-                onCheckedChange={(c) => form.setValue("sendWelcome", !!c)}
-              />
-              <span className="text-sm text-muted-foreground">
-                Send account activation instruction to user&apos;s email
-              </span>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <DialogFooter className="col-span-2 flex justify-end gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="bg-gradient-to-r from-purple-500 to-green-400 text-white"
-            >
-              Add user
-            </Button>
-          </DialogFooter>
-        </form>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="bg-gradient-to-r from-purple-500 to-green-400 text-white"
+              >
+                Add User
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

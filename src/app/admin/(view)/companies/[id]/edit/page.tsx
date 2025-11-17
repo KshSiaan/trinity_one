@@ -5,8 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Upload } from "lucide-react";
-import { Label } from "@/components/ui/label";
+import { Upload, ArrowLeft } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,35 +17,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { companyFormSchema, type CompanyFormData } from "./schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createCompanyApi } from "@/lib/api/admin";
+import { companyFormSchema, type CompanyFormData } from "../../add/schema";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getCompanyDetailsApi, updateCompanyApi } from "@/lib/api/admin";
 import { toast } from "sonner";
 import { useCookies } from "react-cookie";
 import { idk } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { Loader2Icon } from "lucide-react";
 
-export function CompanyInfoCard() {
-  const [logoPreview, setLogoPreview] = React.useState<string>("/");
+export default function EditCompanyPage() {
+  const [logoPreview, setLogoPreview] = React.useState<string>("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const qcl = useQueryClient();
-  const navig = useRouter();
+  const router = useRouter();
+  const params = useParams();
+  const companyId = params.id as string;
   const [{ token }] = useCookies(["token"]);
-  const { mutate } = useMutation({
-    mutationKey: ["create_company"],
-    mutationFn: (body: FormData) => {
-      return createCompanyApi(body, token);
-    },
-    onError: (err) => {
-      toast.error(err.message ?? "Failed to complete this request");
-    },
-    onSuccess: (res: idk) => {
-      qcl.invalidateQueries({ queryKey: ["companies_data"] });
-      navig.push("/admin/companies");
-      form.reset();
-      toast.success(res.message ?? "Successfully created a company!");
-    },
-  });
 
   const form = useForm({
     resolver: zodResolver(companyFormSchema),
@@ -62,6 +49,51 @@ export function CompanyInfoCard() {
       send_welcome_email: false,
       company_logo: undefined,
     } as CompanyFormData,
+  });
+
+  // Fetch company details
+  const { data: companyData, isPending: isLoading } = useQuery({
+    queryKey: ["company_details", companyId],
+    queryFn: () => getCompanyDetailsApi(companyId, token),
+    enabled: !!companyId && !!token,
+  });
+
+  // Populate form when company data is loaded
+  React.useEffect(() => {
+    if (companyData?.data) {
+      const company = companyData.data;
+      form.reset({
+        company_name: company.company_name,
+        company_email: company.company_email,
+        company_phone: company.company_phone,
+        company_address: company.company_address,
+        manager_full_name: company.manager_full_name,
+        manager_email: company.manager_email,
+        manager_phone: company.manager_phone,
+        manager_code: company.manager_code,
+        send_welcome_email: company.send_welcome_email === 1,
+        company_logo: undefined,
+      });
+      if (company.company_logo) {
+        setLogoPreview(company.company_logo);
+      }
+    }
+  }, [companyData, form]);
+
+  const { mutate, isPending: isMutating } = useMutation({
+    mutationKey: ["update_company", companyId],
+    mutationFn: (body: FormData) => {
+      return updateCompanyApi(companyId, body, token);
+    },
+    onError: (err) => {
+      toast.error(err.message ?? "Failed to update company");
+    },
+    onSuccess: (res: idk) => {
+      qcl.invalidateQueries({ queryKey: ["companies_data"] });
+      qcl.invalidateQueries({ queryKey: ["company_details"] });
+      router.push("/admin/companies");
+      toast.success(res.message ?? "Company updated successfully!");
+    },
   });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,23 +126,33 @@ export function CompanyInfoCard() {
     if (data.company_logo) {
       formData.append("company_logo", data.company_logo);
     }
+
     mutate(formData);
-    // Log FormData
-    console.log("FormData entries:");
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(
-          `${key}: File(${value.name}, ${value.type}, ${value.size} bytes)`
-        );
-      } else {
-        console.log(`${key}: ${value}`);
-      }
-    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2Icon className="animate-spin w-8 h-8" />
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <h1 className="text-3xl font-semibold">Edit Company</h1>
+        </div>
+
         <Card className="w-full mx-auto">
           <CardHeader>
             <CardTitle className="text-xl font-medium text-muted-foreground">
@@ -207,7 +249,6 @@ export function CompanyInfoCard() {
                         placeholder="e.g. 000 0000000"
                         className="border-gray-300"
                         {...field}
-                        type="tel"
                       />
                     </FormControl>
                     <FormMessage />
@@ -296,7 +337,6 @@ export function CompanyInfoCard() {
                         placeholder="e.g. 000 000000000"
                         className="border-gray-300"
                         {...field}
-                        type="tel"
                       />
                     </FormControl>
                     <FormMessage />
@@ -316,7 +356,6 @@ export function CompanyInfoCard() {
                         placeholder="e.g. 123123"
                         className="border-gray-300"
                         {...field}
-                        type="number"
                       />
                     </FormControl>
                     <FormMessage />
@@ -348,8 +387,15 @@ export function CompanyInfoCard() {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              Save Company
+            <Button type="submit" className="w-full" disabled={isMutating}>
+              {isMutating ? (
+                <>
+                  <Loader2Icon className="mr-2 w-4 h-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                "Update Company"
+              )}
             </Button>
           </CardContent>
         </Card>

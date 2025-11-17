@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+"use client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,22 +21,20 @@ import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  EditIcon,
-  EyeIcon,
-  PlusIcon,
-  SearchIcon,
-  Trash2Icon,
-} from "lucide-react";
+import { PlusIcon, SearchIcon } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import Companies from "./companies";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function Page() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
   return (
     <section className="w-full h-full">
       <Card>
@@ -55,13 +53,15 @@ export default function Page() {
               <Input
                 className="border-0! w-full ring-0!  shadow-none! outline-0! bg-transparent!"
                 placeholder="Search by company or manager..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
               />
             </div>
-            <Select>
+            {/* <Select>
               <SelectTrigger>
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
-            </Select>
+            </Select> */}
           </div>
           <div className="mt-6 w-full">
             <Table>
@@ -70,40 +70,17 @@ export default function Page() {
                   <TableHead>Company Name</TableHead>
                   <TableHead>Manager</TableHead>
                   <TableHead>Manager Code</TableHead>
-                  <TableHead>Employees</TableHead>
+                  {/* <TableHead>Employees</TableHead> */}
                   <TableHead>Created Date</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell className="flex items-center gap-2">
-                    <Avatar>
-                      <AvatarImage
-                        src={`https://avatar.iran.liara.run/public`}
-                      />
-                      <AvatarFallback>UI</AvatarFallback>
-                    </Avatar>
-                    <p>Quantum Solutions</p>
-                  </TableCell>
-                  <TableCell>Raven</TableCell>
-                  <TableCell>
-                    <Badge variant={"secondary"}>12345</Badge>
-                  </TableCell>
-                  <TableCell>150</TableCell>
-                  <TableCell>02-12-2025</TableCell>
-                  <TableCell>
-                    <Button variant={"ghost"} size={"icon"}>
-                      <EyeIcon />
-                    </Button>
-                    <Button variant={"ghost"} size={"icon"}>
-                      <EditIcon />
-                    </Button>
-                    <Button variant={"ghost"} size={"icon"}>
-                      <Trash2Icon />
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                <Companies
+                  currentPage={currentPage}
+                  onTotalPagesChange={setTotalPages}
+                  search={debouncedSearch}
+                />
               </TableBody>
             </Table>
           </div>
@@ -113,19 +90,39 @@ export default function Page() {
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious />
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    className={
+                      currentPage === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
                 </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(page)}
+                        isActive={page === currentPage}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )}
                 <PaginationItem>
-                  <PaginationLink>1</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink>2</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink>3</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext />
+                  <PaginationNext
+                    onClick={() =>
+                      setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    }
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
                 </PaginationItem>
               </PaginationContent>
             </Pagination>

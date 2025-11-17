@@ -1,47 +1,68 @@
 "use client";
 
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
-
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import type { idk } from "@/lib/utils";
 
-export const description = "A multiple line chart";
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
+const COLORS = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+  "var(--chart-6)",
 ];
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "var(--chart-1)",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "var(--chart-2)",
-  },
-} satisfies ChartConfig;
+export function ChartLineMultiple({ data }: { data: any }) {
+  if (!data) return null;
 
-export function ChartLineMultiple() {
+  // force array (API gives single object)
+  const arr = Array.isArray(data) ? data : [data];
+
+  // extract department names
+  const departmentNames: idk = (arr[0].departments ?? []).map(
+    (d: any) => d.department_name
+  );
+
+  // build chart config
+  const chartConfig: ChartConfig = departmentNames.reduce(
+    (
+      acc: { [x: string]: { label: any; color: string } },
+      name: string | number,
+      idx: number
+    ) => {
+      acc[name] = {
+        label: name,
+        color: COLORS[idx] ?? COLORS[0],
+      };
+      return acc;
+    },
+    {} as ChartConfig
+  );
+
+  // convert to recharts format
+  const chartData = arr.map((item) => {
+    const row: any = { month: item.month };
+
+    (item.departments ?? []).forEach((dep: any) => {
+      row[dep.department_name] = dep.value;
+    });
+
+    return row;
+  });
+
   return (
-    <div className="">
-      <ChartContainer config={chartConfig} className="max-h-[30dvh] w-full">
+    <div>
+      <ChartContainer config={chartConfig} className="max-h-[35dvh] w-full">
         <LineChart
           accessibilityLayer
           data={chartData}
-          margin={{
-            left: 12,
-            right: 12,
-          }}
+          margin={{ left: 12, right: 12 }}
         >
           <CartesianGrid vertical={false} />
           <XAxis
@@ -49,45 +70,43 @@ export function ChartLineMultiple() {
             tickLine={false}
             axisLine={false}
             tickMargin={8}
-            tickFormatter={(value) => value.slice(0, 3)}
+            tickFormatter={(value) => value?.slice(0, 3)}
           />
+
           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-          <Line
-            dataKey="desktop"
-            type="monotone"
-            stroke="var(--color-desktop)"
-            strokeWidth={2}
-            dot={{
-              r: 5,
-              strokeWidth: 2,
-              fill: "white",
-              stroke: "var(--color-desktop)",
-            }}
-          />
-          <Line
-            dataKey="mobile"
-            type="monotone"
-            stroke="var(--color-mobile)"
-            strokeWidth={2}
-            dot={{
-              r: 5,
-              strokeWidth: 2,
-              fill: "white",
-              stroke: "var(--color-mobile)",
-            }}
-          />
+
+          {departmentNames.map((name: string, index: number) => (
+            <Line
+              key={name}
+              dataKey={name}
+              type="monotone"
+              stroke={COLORS[index] ?? COLORS[0]}
+              strokeWidth={2}
+              dot={{
+                r: arr.length === 1 ? 6 : 4, // show dot for single point
+                strokeWidth: 2,
+                fill: "white",
+                stroke: COLORS[index] ?? COLORS[0],
+              }}
+            />
+          ))}
         </LineChart>
       </ChartContainer>
-      <div className="w-full mt-6 flex justify-center items-center gap-6">
-        <div className=" text-sm font-semibold flex items-center gap-2">
-          <div className="size-4 rounded-full bg-purple-400" /> Engineer
-        </div>
-        <div className=" text-sm font-semibold flex items-center gap-2">
-          <div className="size-4 rounded-full bg-amber-400" /> Finance
-        </div>
-        <div className=" text-sm font-semibold flex items-center gap-2">
-          <div className="size-4 rounded-full bg-lime-400" /> Marketing
-        </div>
+
+      {/* LEGEND */}
+      <div className="w-full mt-6 flex justify-center items-center gap-6 flex-wrap">
+        {departmentNames.map((name: string, idx: number) => (
+          <div
+            key={name}
+            className="text-sm font-semibold flex items-center gap-2"
+          >
+            <span
+              className="size-4 rounded-full"
+              style={{ background: COLORS[idx] ?? COLORS[0] }}
+            />
+            {name}
+          </div>
+        ))}
       </div>
     </div>
   );

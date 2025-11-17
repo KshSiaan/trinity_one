@@ -21,15 +21,22 @@ export async function howl<T>(
   endpoint: string,
   { method = "GET", body, token, headers = {} }: ApiClientOptions = {}
 ): Promise<T> {
+  const isFormData = body instanceof FormData;
+  const requestHeaders: Record<string, string> = {
+    "Accept": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...headers,
+  };
+
+  // Only set Content-Type for non-FormData requests
+  if (!isFormData) {
+    requestHeaders["Content-Type"] = "application/json";
+  }
+
   const res = await fetch(`${API_BASE}${endpoint}`, {
     method,
-    headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...headers,
-    },
-    body: body ? JSON.stringify(body) : undefined,
+    headers: requestHeaders,
+    body: isFormData ? body : body ? JSON.stringify(body) : undefined,
   });
 
   if (!res.ok) {

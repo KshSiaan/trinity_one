@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,8 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { EmployeeDashboardDialog } from "./dialog-comp";
+import { useCookies } from "react-cookie";
+import { useQuery } from "@tanstack/react-query";
 
 const dataset = [
   {
