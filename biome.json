@@ -16,7 +16,11 @@
   },
   "linter": {
     "enabled": true,
+    
     "rules": {
+      "suspicious":{
+        "noArrayIndexKey":"off"
+      },
       "recommended": true
     },
     "domains": {

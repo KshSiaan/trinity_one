@@ -49,7 +49,7 @@ export default function Page() {
     },
   });
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationKey: ["login"],
     mutationFn: (body: z.infer<typeof formSchema>) => {
       return loginApi({ body });
@@ -125,15 +125,24 @@ export default function Page() {
                 )}
               />
 
-              <Button type="submit" className="w-2/3 mx-auto block">
-                Log in
+              <Button
+                type="submit"
+                className="w-2/3 mx-auto block"
+                disabled={isPending}
+              >
+                {isPending ? "Logging in..." : "Login"}
               </Button>
             </form>
           </Form>
         </CardContent>
 
         <CardFooter className="w-full flex flex-col gap-4">
-          <Button className="w-2/3 mx-auto" variant="ghost" asChild>
+          <Button
+            className="w-2/3 mx-auto"
+            variant="ghost"
+            disabled={isPending}
+            asChild
+          >
             <Link href="/admin/forgot">Forgot Password</Link>
           </Button>
         </CardFooter>

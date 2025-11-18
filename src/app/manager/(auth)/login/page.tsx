@@ -60,9 +60,9 @@ export default function Page() {
             maxLength={6}
             value={pin}
             onChange={setPin}
-            onPaste={() => {
-              setTimeout(() => mutate(), 0);
-            }}
+            // onPaste={() => {
+            //   setTimeout(() => mutate(), 0);
+            // }}
           >
             <InputOTPSlot index={0} className="rounded-lg!" />
             <InputOTPSlot index={1} className="rounded-lg!" />

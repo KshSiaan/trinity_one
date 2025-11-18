@@ -242,3 +242,10 @@ export const updateTermsApi = async (
 token: string, content: string)=>{
   return howl(`/term-condition/store`, {method:"POST",token,body:{content}});
 }
+
+export const addReportApi = async (
+  token: string,
+  body: FormData
+) => {
+  return howl(`/admin-dashboard/create-report`, {method:"POST",body,token});
+};

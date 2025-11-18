@@ -4,6 +4,7 @@ import {
   BarChartBig,
   BellIcon,
   BuildingIcon,
+  CircleDollarSignIcon,
   ClipboardListIcon,
   LayoutDashboardIcon,
   Settings2,
@@ -47,6 +48,11 @@ const data = {
     { name: "Category", url: `${prefix}/category`, icon: ShapesIcon },
     { name: "Notifications", url: `${prefix}/notif`, icon: BellIcon },
     { name: "ROI Tracker", url: `${prefix}/roi`, icon: SquareKanbanIcon },
+    {
+      name: "Subscription",
+      url: `${prefix}/subscription`,
+      icon: CircleDollarSignIcon,
+    },
   ],
 };
 

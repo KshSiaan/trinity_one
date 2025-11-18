@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2Icon, PlusIcon } from "lucide-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCookies } from "react-cookie";
 import { howl, idk } from "@/lib/utils";
 
@@ -57,12 +57,12 @@ export function AddUserDialog() {
   const [open, setOpen] = React.useState(false);
   const [avatarFile, setAvatarFile] = React.useState<File | null>(null);
   const [{ token }] = useCookies(["token"]);
-
+  const qcl = useQueryClient();
   const { data, isPending } = useQuery({
     queryKey: ["departments"],
     queryFn: (): idk => howl(`/department/index`, { method: "GET", token }),
   });
-  const { mutate } = useMutation({
+  const { mutate, isPending: uploading } = useMutation({
     mutationKey: ["create_user"],
     mutationFn: (formData: FormData) => {
       return createUserApi(formData, token);
@@ -72,6 +72,7 @@ export function AddUserDialog() {
     },
     onSuccess: (res: idk) => {
       toast.success(res.message ?? "Success!");
+      qcl.invalidateQueries({ queryKey: ["users"] });
     },
   });
   const form = useForm<UserFormData>({
@@ -100,9 +101,15 @@ export function AddUserDialog() {
     formData.append("send_welcome_email", values.sendWelcome ? "1" : "0");
     formData.append("employee_pin", values.employeePin);
     if (avatarFile) formData.append("avatar", avatarFile);
-    console.log("FormData entries:");
-    for (const pair of formData.entries()) console.log(pair[0], pair[1]);
-    setOpen(false);
+
+    mutate(formData, {
+      onSuccess: () => {
+        setOpen(false);
+      },
+    });
+
+    // console.log("FormData entries:");
+    // for (const pair of formData.entries()) console.log(pair[0], pair[1]);
   };
 
   return (
@@ -243,8 +250,9 @@ export function AddUserDialog() {
                         <SelectValue placeholder="Select Status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Inactive">Inactive</SelectItem>
+                        <SelectItem value="Pending">Pending</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -299,10 +307,15 @@ export function AddUserDialog() {
                 Cancel
               </Button>
               <Button
+                disabled={uploading}
                 type="submit"
                 className="bg-gradient-to-r from-purple-500 to-green-400 text-white"
               >
-                Add User
+                {uploading ? (
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Add User"
+                )}
               </Button>
             </DialogFooter>
           </form>
