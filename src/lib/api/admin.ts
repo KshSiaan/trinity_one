@@ -1,4 +1,11 @@
 import { howl } from "../utils";
+import { AdminDBType } from "./admin-types";
+
+
+
+export const adminDashboardApi = async(token:string,month?:string):Promise<AdminDBType>=>{
+  return howl(`/admin-dashboard/index?month=${month}`,{token});
+}
 
 
 export const getCompaniesApi = async (

@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ActivityIcon,
@@ -10,56 +11,66 @@ import {
 import { ChartPieDonut } from "./pie-chart";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChartBarDefault } from "./bar-chart";
-
-const dataset = [
-  {
-    label: "Active Employees",
-    icon: UsersIcon,
-    amm: 1247,
-    growth: {
-      up: true,
-      value: 5.2,
-    },
-  },
-  {
-    label: "Goal Completion Rate",
-    icon: TrophyIcon,
-    amm: 1247,
-    growth: {
-      up: true,
-      value: 5.2,
-    },
-  },
-  {
-    label: "Engagement Score",
-    icon: SparkleIcon,
-    amm: 1247,
-    growth: {
-      up: false,
-      value: 5.2,
-    },
-  },
-  {
-    label: "Manager Activity",
-    icon: ActivityIcon,
-    amm: 1247,
-    growth: {
-      up: true,
-      value: 2.8,
-    },
-  },
-  {
-    label: "ROI Estimate",
-    icon: DollarSignIcon,
-    amm: 1247,
-    growth: {
-      up: true,
-      value: 2.8,
-    },
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { adminDashboardApi } from "@/lib/api/admin";
+import { useCookies } from "react-cookie";
 
 export default function Page() {
+  const [{ token }] = useCookies(["token"]);
+  const { data, isPending } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: () => {
+      return adminDashboardApi(token, String(12));
+    },
+  });
+
+  const dataset = [
+    {
+      label: "Active Employees",
+      icon: UsersIcon,
+      amm: data?.data?.summary?.active_employee ?? 0,
+      growth: {
+        up: true,
+        value: 5.2,
+      },
+    },
+    {
+      label: "Goal Completion Rate",
+      icon: TrophyIcon,
+      amm: data?.data?.summary?.goal_completion_rate ?? 0,
+      growth: {
+        up: true,
+        value: 5.2,
+      },
+    },
+    {
+      label: "Engagement Score",
+      icon: SparkleIcon,
+      amm: data?.data?.summary?.engagement_score ?? 0,
+      growth: {
+        up: false,
+        value: 5.2,
+      },
+    },
+    {
+      label: "Manager Activity",
+      icon: ActivityIcon,
+      amm: data?.data?.summary?.manager_activity,
+      growth: {
+        up: true,
+        value: 2.8,
+      },
+    },
+    {
+      label: "ROI Estimate",
+      icon: DollarSignIcon,
+      amm: 1247,
+      growth: {
+        up: true,
+        value: 2.8,
+      },
+    },
+  ];
   return (
     <div className="w-full h-full flex flex-col gap-6">
       <div className="grid auto-rows-min gap-4 md:grid-cols-5">
@@ -76,12 +87,12 @@ export default function Page() {
                 </div>
                 <span className="text-2xl ">{x.amm}</span>
               </div>
-              <div className="h-full flex justify-end items-end">
+              {/* <div className="h-full flex justify-end items-end">
                 <div className="flex items-center text-green-600 text-sm">
                   <ArrowUp className="size-4" />
                   {x.growth.value}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         ))}
@@ -94,13 +105,6 @@ export default function Page() {
                 <TrophyIcon className="size-5 text-background" />
               </div>
               <h3 className="font-semibold">Goal Completation by Category</h3>
-            </div>
-            <div className="">
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Timeline" />
-                </SelectTrigger>
-              </Select>
             </div>
           </div>
           <div className="flex-1 w-full flex justify-center items-center ">
