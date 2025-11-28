@@ -256,3 +256,39 @@ export const addReportApi = async (
 ) => {
   return howl(`/admin-dashboard/create-report`, {method:"POST",body,token});
 };
+
+
+export const createNotif = async (token: string, body:{name:string,message:string,role:string,status:string}):Promise<{
+  status: string
+  message: string
+  data: {
+    name: string
+    message: string
+    role: string
+    status: string
+    updated_at: string
+    created_at: string
+    id: number
+  }
+}>=>{
+  return howl(`/notification/create`, {method:"POST",token,body});
+}
+export const updateNotifApi = async (token: string,id:string|number, body:{name:string,message:string,role:string,status:string}):Promise<{
+  status: string
+  message: string
+  data: {
+    name: string
+    message: string
+    role: string
+    status: string
+    updated_at: string
+    created_at: string
+    id: number
+  }
+}>=>{
+  return howl(`/notification/update/${id}?_method=PUT`, {method:"POST",token,body});
+}
+
+export const deleteNotif = async (token: string,id:string|number)=>{
+  return howl(`/notification/delete/${id}`, {method:"DELETE",token});
+}

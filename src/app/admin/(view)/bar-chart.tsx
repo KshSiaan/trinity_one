@@ -11,23 +11,23 @@ import {
 
 export const description = "A bar chart";
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-];
-
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "Category",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
-export function ChartBarDefault() {
+export function ChartBarDefault({
+  data,
+}: {
+  data: { category_name: string; value: number }[];
+}) {
+  const chartData = data?.map((item) => ({
+    month: item.category_name,
+    desktop: item.value,
+  }));
+
   return (
     <ChartContainer config={chartConfig} className="h-[300px]">
       <BarChart accessibilityLayer data={chartData}>

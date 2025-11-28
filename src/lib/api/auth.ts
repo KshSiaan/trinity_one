@@ -102,3 +102,13 @@ export const updateProfileApi = async ({
   }
   return res.json();
 };
+
+
+export const getNotifApi = async ({token,page,per_page}:{token: string,page:number|string,per_page:number|string}) => {
+  return howl(`/notification/index?per_page=${per_page}&page=${page}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

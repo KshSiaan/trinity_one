@@ -1,5 +1,4 @@
 "use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ActivityIcon,
   ArrowUp,
@@ -14,6 +13,7 @@ import { ChartBarDefault } from "./bar-chart";
 import { useQuery } from "@tanstack/react-query";
 import { adminDashboardApi } from "@/lib/api/admin";
 import { useCookies } from "react-cookie";
+import Notifs from "./notifs";
 
 export default function Page() {
   const [{ token }] = useCookies(["token"]);
@@ -108,7 +108,7 @@ export default function Page() {
             </div>
           </div>
           <div className="flex-1 w-full flex justify-center items-center ">
-            <ChartBarDefault />
+            <ChartBarDefault data={data?.data?.top_5_categories as any} />
           </div>
         </div>
         <div className="flex-1 rounded-xl p-6 border aspect-video bg-background!">
@@ -129,55 +129,22 @@ export default function Page() {
           </div>
           <div className="w-full grid grid-cols-2 gap-6 items-center">
             <div className="">
-              <ChartPieDonut />
-            </div>{" "}
+              <ChartPieDonut
+                data={data?.data?.department_employee_stats as any}
+              />
+            </div>
             <div className="flex flex-col justify-around items-start h-2/3 ">
-              <span className="flex items-center gap-6">
-                <div className="size-5 rounded-full bg-amber-500" />
-                <span>Engineer</span>
-              </span>
-              <span className="flex items-center gap-6">
-                <div className="size-5 rounded-full bg-amber-500" />
-                <span>Engineer</span>
-              </span>
-              <span className="flex items-center gap-6">
-                <div className="size-5 rounded-full bg-amber-500" />
-                <span>Engineer</span>
-              </span>
-              <span className="flex items-center gap-6">
-                <div className="size-5 rounded-full bg-amber-500" />
-                <span>Engineer</span>
-              </span>
+              {data?.data?.top_5_departments.map((x) => (
+                <span className="flex items-center gap-6" key={x.name}>
+                  <div className="size-5 rounded-full bg-amber-500" />
+                  <span>{x.name}</span>
+                </span>
+              ))}
             </div>
           </div>
         </div>
       </div>
-      <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min bg-background! flex flex-col justify-start items-start p-6">
-        <h3>Recent Activity</h3>
-        <div className="flex flex-col gap-4 w-full py-6">
-          {Array(6)
-            .fill("")
-            .map((_, i) => (
-              <div
-                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                key={i}
-                className="h-18 w-full border rounded-lg flex items-center px-4"
-              >
-                <Avatar className="size-12">
-                  <AvatarImage src={"https://avatar.iran.liara.run/public"} />
-                  <AvatarFallback>UI</AvatarFallback>
-                </Avatar>
-                <div className="h-full flex flex-col items-start justify-center ml-4">
-                  <h4>
-                    <span className="font-semibold">Sarah Chan</span> completed
-                    leadership goal training!
-                  </h4>
-                  <p className="text-xs text-muted-foreground">2 hours ago</p>
-                </div>
-              </div>
-            ))}
-        </div>
-      </div>
+      <Notifs />
     </div>
   );
 }
