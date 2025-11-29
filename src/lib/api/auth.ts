@@ -112,3 +112,28 @@ export const getNotifApi = async ({token,page,per_page}:{token: string,page:numb
     },
   });
 };
+export const getUserNotifApi = async ({token,page,per_page}:{token: string,page:number|string,per_page:number|string}) => {
+  return howl(`/notification/get?per_page=${per_page}&page=${page}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const readNotifApi = (token: string,id:string) => {
+  return howl(`/notification/read/${id}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body:{}
+  })}
+export const readAllNotifApi = (token: string) => {
+  return howl(`/notification/read-all`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body:{}
+  })}

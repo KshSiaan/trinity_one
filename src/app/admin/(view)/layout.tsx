@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/ui/logout-button";
 import HeaderProfSection from "@/components/core/header-profile-section";
+import Link from "next/link";
 
 export default async function Layout({
   children,
@@ -35,8 +36,10 @@ export default async function Layout({
                   placeholder="Search.."
                 />
               </div>
-              <Button size={"icon"} variant={"ghost"}>
-                <BellIcon />
+              <Button size={"icon"} variant={"ghost"} asChild>
+                <Link href={"/admin/notifications"}>
+                  <BellIcon />
+                </Link>
               </Button>
               <HeaderProfSection />
               <LogoutButton />
