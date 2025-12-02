@@ -324,3 +324,7 @@ export const updateSubsAPI = async (token: string,id:string|number,body:any):Pro
 return howl(`/admin-dashboard/update-plan/${id}?_method=PUT`, {
 method: "POST",token,body});
 }
+
+
+
+

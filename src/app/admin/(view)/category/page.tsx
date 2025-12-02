@@ -172,7 +172,7 @@ export default function Page() {
                     setOpenEdit({ ...openEdit, [category.id]: v })
                   }
                 >
-                  <DialogTrigger asChild>
+                  {/* <DialogTrigger asChild>
                     <Button
                       variant="ghost"
                       onClick={() =>
@@ -181,9 +181,9 @@ export default function Page() {
                     >
                       <EditIcon />
                     </Button>
-                  </DialogTrigger>
+                  </DialogTrigger> */}
 
-                  <DialogContent className="min-w-[80dvw]">
+                  {/* <DialogContent className="min-w-[80dvw]">
                     <DialogHeader>
                       <DialogTitle>Edit your category</DialogTitle>
                     </DialogHeader>
@@ -196,11 +196,11 @@ export default function Page() {
                         setOpenEdit({ ...openEdit, [category.id]: false })
                       }
                     />
-                  </DialogContent>
+                  </DialogContent> */}
                 </Dialog>
 
                 {/* DELETE POPUP */}
-                <Popover>
+                {/* <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="ghost">
                       <Trash2Icon />
@@ -225,7 +225,7 @@ export default function Page() {
                       </Button>
                     </div>
                   </PopoverContent>
-                </Popover>
+                </Popover> */}
               </div>
             </div>
           ))}

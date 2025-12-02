@@ -30,15 +30,11 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import {
-  TrendingUp,
-  Users,
-  Target,
-  AlertTriangle,
-  Menu,
-  Bell,
-  Settings,
-} from "lucide-react";
+import { TrendingUp, Target, AlertTriangle } from "lucide-react";
+import { useCookies } from "react-cookie";
+import { useQuery } from "@tanstack/react-query";
+import { howl, idk } from "@/lib/utils";
+import { TeammemberType } from "@/lib/api/manager-dashboard-type";
 
 const chartData = [
   { quarter: "Q1", goalProgress: 35, teamProductivity: 42 },
@@ -104,6 +100,18 @@ const riskData = [
 ];
 
 export default function Page() {
+  const [{ token }] = useCookies(["token"]);
+
+  // Fetch reports
+  const { data, isPending } = useQuery({
+    queryKey: ["report"],
+    queryFn: (): idk => howl(`/manager/dashboard`, { method: "GET", token }),
+  });
+
+  const teamMember: TeammemberType[] = data?.data?.team_members || [];
+
+  console.log("manager data is", teamMember);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Main Content */}
@@ -236,7 +244,7 @@ export default function Page() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {riskData.map((item, index) => (
+                {teamMember.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{item.member}</TableCell>
                     <TableCell>
@@ -244,11 +252,11 @@ export default function Page() {
                         variant="outline"
                         className="bg-yellow-50 text-yellow-800 border-yellow-200"
                       >
-                        {item.riskFactor}
+                        {item.engagement}
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                      {item.issue}
+                      {item.kpi_status}
                     </TableCell>
                     <TableCell>
                       <Button

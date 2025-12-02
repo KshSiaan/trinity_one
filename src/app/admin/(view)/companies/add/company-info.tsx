@@ -32,6 +32,7 @@ export function CompanyInfoCard() {
   const qcl = useQueryClient();
   const navig = useRouter();
   const [{ token }] = useCookies(["token"]);
+
   const { mutate } = useMutation({
     mutationKey: ["create_company"],
     mutationFn: (body: FormData) => {
