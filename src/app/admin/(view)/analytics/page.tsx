@@ -14,6 +14,8 @@ import { Progress } from "@/components/ui/progress";
 import { useQuery } from "@tanstack/react-query";
 import { getCompanyAnalyticsApi } from "@/lib/api/admin";
 import { useCookies } from "react-cookie";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function Page() {
   const [{ token }] = useCookies(["token"]);
@@ -23,12 +25,33 @@ export default function Page() {
     queryFn: () => getCompanyAnalyticsApi(token, 12),
   });
 
+  console.log("departments data is", data?.departments);
+
   if (isPending) {
     return (
       <div className="flex justify-center items-center h-24 mx-auto">
         <Loader2Icon className="animate-spin" />
       </div>
     );
+  }
+
+  function downloadReportLocal() {
+    // Create header
+    const wsData = [["Department Name", "Value"]];
+
+    // Push each department row
+    data?.departments?.forEach((d) => {
+      wsData.push([d.department_name, d.value.toString()]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Report");
+
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+
+    saveAs(blob, `${"Report"}_${Date.now()}.xlsx`);
   }
 
   return (
@@ -48,7 +71,7 @@ export default function Page() {
               </Select>
             </div>
 
-            <Button>
+            <Button onClick={downloadReportLocal}>
               <DownloadIcon />
               Export data
             </Button>

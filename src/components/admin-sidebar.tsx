@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import {
   BarChartBig,
@@ -22,12 +23,12 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+
 const prefix = "/admin";
-// sample data
+
 const data = {
   navMain: [
     {
@@ -56,16 +57,13 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  React.useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    // placeholder during SSR → avoids flicker/mismatch
     return (
       <Sidebar variant="sidebar" className="py-6" collapsible="icon" {...props}>
         <SidebarHeader>
@@ -90,18 +88,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <div className="h-20 w-full flex justify-center items-center">
           <Image
-            src={"/logo-db.png"}
+            src={"/image/logo/kevin-logo.svg"}
             height={200}
             width={200}
-            className="h-full object-contain"
+            className="h-full w-[116px]  "
             alt="logo"
           />
         </div>
       </SidebarHeader>
+
       <SidebarContent>
         <NavProjects projects={data.projects} />
         <NavMain items={data.navMain} />
       </SidebarContent>
+
       <SidebarFooter>
         <button
           type="button"

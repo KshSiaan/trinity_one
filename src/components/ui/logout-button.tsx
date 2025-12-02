@@ -43,7 +43,7 @@ export default function LogoutButton() {
           <AlertDialogAction
             onClick={() => {
               removeToken("token");
-              navig.push("/manager/login");
+              navig.push("/");
             }}
           >
             Log out

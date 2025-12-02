@@ -1,4 +1,5 @@
 "use client";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Empty,
@@ -8,8 +9,8 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { getNotifApi } from "@/lib/api/auth";
-import { idk } from "@/lib/utils";
+import { getNotifApi, getUserNotifApi } from "@/lib/api/auth";
+import { cn, idk } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { CircleOffIcon, Loader2Icon } from "lucide-react";
 import React from "react";
@@ -18,11 +19,16 @@ import { useCookies } from "react-cookie";
 export default function Notifs() {
   const [{ token }] = useCookies(["token"]);
   const { data, isPending } = useQuery({
-    queryKey: ["notif"],
+    queryKey: ["notification"],
     queryFn: (): idk => {
-      return getNotifApi({ token, page: 1, per_page: 6 });
+      return getUserNotifApi({
+        token,
+        page: 1,
+        per_page: 6,
+      });
     },
   });
+
   if (isPending) {
     <div className={`flex justify-center items-center h-24 mx-auto`}>
       <Loader2Icon className={`animate-spin`} />
@@ -52,26 +58,15 @@ export default function Notifs() {
     <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min bg-background! flex flex-col justify-start items-start p-6">
       <h3>Recent Activity</h3>
       <div className="flex flex-col gap-4 w-full py-6">
-        {Array(6)
-          .fill("")
-          .map((_, i) => (
-            <div
-              key={i}
-              className="h-18 w-full border rounded-lg flex items-center px-4"
-            >
-              <Avatar className="size-12">
-                <AvatarImage src={"https://avatar.iran.liara.run/public"} />
-                <AvatarFallback>UI</AvatarFallback>
-              </Avatar>
-              <div className="h-full flex flex-col items-start justify-center ml-4">
-                <h4>
-                  <span className="font-semibold">Sarah Chan</span> completed
-                  leadership goal training!
-                </h4>
-                <p className="text-xs text-muted-foreground">2 hours ago</p>
-              </div>
-            </div>
-          ))}
+        {data?.data?.data.map((x: any) => (
+          <Alert
+            key={x.id}
+            className={cn(x.read_at === null && "border-2! border-green-700!")}
+          >
+            <AlertTitle>{x.data.name}</AlertTitle>
+            <AlertDescription>{x.data.message}</AlertDescription>
+          </Alert>
+        ))}
       </div>
     </div>
   );

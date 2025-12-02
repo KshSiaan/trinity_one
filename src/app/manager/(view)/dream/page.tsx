@@ -27,7 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Users, Target, Award } from "lucide-react";
 
 export default function TeamManagementPage() {
@@ -127,65 +126,27 @@ export default function TeamManagementPage() {
     <div className="min-h-screen">
       {/* Main Content */}
       <main className="mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Set a New Team Dream */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="w-5 h-5" />
-                Set a New Team Dream
-              </CardTitle>
-              <CardDescription>
-                Create inspiring goals to motivate your team
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="dream-title">Dream Title</Label>
-                <Input
-                  id="dream-title"
-                  placeholder="e.g. Improve Customer Satisfaction"
-                  value={dreamTitle}
-                  onChange={(e) => setDreamTitle(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  placeholder="e.g. Improve Customer Satisfaction"
-                  value={dreamDescription}
-                  onChange={(e) => setDreamDescription(e.target.value)}
-                  rows={3}
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={handleCreateGoal} className="flex-1">
-                  Create Goal
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleGenerateDescription}
-                  className="flex-1 bg-transparent"
-                >
-                  Generate Description
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
+        <div className="mb-12">
           {/* Assign Mentor */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Award className="w-5 h-5" />
-                Assign Mentor
+                Company Goal
               </CardTitle>
               <CardDescription>
-                Connect team members with experienced mentors
+                Select a strategic company-wide goal to assign to your team
+                members.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Select Company Goal</Label>
+                <Textarea
+                  className="min-h-[200px]"
+                  placeholder="e.g., Improve Customer Satisfaction"
+                />
+              </div>
               <div className="space-y-2">
                 <Label>Select Employee</Label>
                 <Select
@@ -227,7 +188,7 @@ export default function TeamManagementPage() {
                 className="w-full"
                 disabled={!selectedEmployee || !selectedMentor}
               >
-                Assign Mentor
+                Create Goal
               </Button>
             </CardContent>
           </Card>

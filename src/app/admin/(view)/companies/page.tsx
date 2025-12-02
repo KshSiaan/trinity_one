@@ -85,6 +85,7 @@ export default function Page() {
             </Table>
           </div>
         </CardContent>
+
         <CardFooter className="flex justify-end items-center">
           <div className="">
             <Pagination>
