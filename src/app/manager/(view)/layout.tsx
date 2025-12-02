@@ -1,15 +1,9 @@
 import HeaderProfSection from "@/components/core/header-profile-section";
 import { AppSidebar } from "@/components/manager-sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LogoutButton from "@/components/ui/logout-button";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import { BellIcon, SearchIcon } from "lucide-react";
 import { cookies } from "next/headers";

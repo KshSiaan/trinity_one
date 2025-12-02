@@ -79,3 +79,62 @@ export const createUserApi = async (
     token,
   });
 }
+
+
+
+// Drem  and  mentorship related api 
+
+
+export const getDremMentorApi = async (
+  token: string
+):Promise<{
+    status:string,
+    message:string,
+    data : {
+       current_page: number,
+      data:{
+      
+              id:number,
+                goal_name: string,
+                assign_by: number,
+                employee_id: number,
+                mentor_id: number,
+                status: number,
+                created_at: string,
+                updated_at: string,
+                employee: {
+                    id: number,
+                    name: string,
+                    email: string,
+                    avatar: string
+                },
+                mentor: {
+                    id: 4,
+                    name: string,
+                    email: string,
+                    avatar: string
+                }
+            
+    }
+    }
+}> => {
+  return howl(`/manager/dream-mentor`, {
+    method: "GET",
+    token,
+  });
+};
+
+
+
+// dream create 
+
+export const createDreamApi = async (
+  body: FormData,
+  token: string
+) => {
+  return howl(`/manager/goal-generate`, {
+    body,
+    method: "POST",
+    token,
+  });
+};
