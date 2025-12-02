@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DollarSignIcon,
@@ -9,66 +10,107 @@ import {
 } from "lucide-react";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChartBarDefault } from "./bar-chart";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartLineMultiple } from "./line-chart";
-import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-const metrics = [
-  {
-    title: "ROI Percentage",
-    icon: PercentIcon,
-    value: "3.2x",
-    change: "+5.2% vs last period",
-    description: "Return on investment from program costs",
-  },
-  {
-    title: "Total Program Cost",
-    icon: DollarSignIcon,
-    value: "$245,000",
-    change: "↑ 5.2% vs last period",
-    description: "Total investment in this platform",
-  },
-  {
-    title: "Total Gains",
-    icon: TrendingUpIcon,
-    value: "$245,000",
-    change: "↑ 5.2% vs last period",
-    description: "Estimated productivity gains & cost savings",
-  },
-  {
-    title: "Engagement Impact",
-    icon: User2Icon,
-    value: "+22%",
-    change: "↑ 5.2% vs last period",
-    description: "ROI correlation with engagement score",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { howl, idk } from "@/lib/utils";
+import { useCookies } from "react-cookie";
+import Leaderboard from "./Leaderboard";
 
 export default function Page() {
+  const [{ token }] = useCookies(["token"]);
+
+  const { data, isPending } = useQuery({
+    queryKey: ["departments"],
+    queryFn: (): idk => howl(`/admin-dashboard/roi`, { method: "GET", token }),
+  });
+
   return (
     <div className="w-full h-full flex flex-col gap-6">
       <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-        {metrics.map((x) => (
-          <Card key={x.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{x.title}</CardTitle>
-              <x.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{x.value}</div>
-              <p className="text-xs text-muted-foreground">{x.change}</p>
-              <CardDescription className="pt-2">
-                {x.description}
-              </CardDescription>
-            </CardContent>
-          </Card>
-        ))}
+        {/* Total Active Employess */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Active Employess
+            </CardTitle>
+            <PercentIcon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {data?.data?.summary?.total_employees}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              +5.2% vs last period
+            </p>
+            {/* <CardDescription className="pt-2">
+              Return on investment from program costs
+            </CardDescription> */}
+          </CardContent>
+        </Card>
+
+        {/* Avg Goal Completion */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Avg Goal Completion
+            </CardTitle>
+            <DollarSignIcon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {data?.data?.summary?.avg_completion_rate}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              ↑ 5.2% vs last period
+            </p>
+            {/* <CardDescription className="pt-2">
+              Total investment in this platform
+            </CardDescription> */}
+          </CardContent>
+        </Card>
+
+        {/* Engagement Score */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Engagement Score
+            </CardTitle>
+            <TrendingUpIcon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {data?.data?.summary?.engagement_score}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              ↑ 5.2% vs last period
+            </p>
+            {/* <CardDescription className="pt-2">
+              Estimated productivity gains & cost savings
+            </CardDescription> */}
+          </CardContent>
+        </Card>
+
+        {/* ROI Impact Score*/}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              ROI Impact Score
+            </CardTitle>
+            <User2Icon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {data?.data?.summary?.roi_impact}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              ↑ 5.2% vs last period
+            </p>
+            {/* <CardDescription className="pt-2">
+              ROI correlation with engagement score
+            </CardDescription> */}
+          </CardContent>
+        </Card>
       </div>
       <div className="w-full grid grid-cols-2 gap-6">
         <div className="flex-1 rounded-xl p-6 border aspect-video bg-background!">
@@ -126,14 +168,14 @@ export default function Page() {
       </div>
       <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min bg-background! flex flex-col justify-start items-start p-6">
         <div className="flex justify-between items-center w-full">
-          <h3 className="text-xl">Scheduled Reports</h3>
-          <Select>
+          <h3 className="text-xl mb-6 ">Emplyoyee Impact Leaderboard</h3>
+          {/* <Select>
             <SelectTrigger>
               <SelectValue placeholder="Select Timeline" />
             </SelectTrigger>
-          </Select>
+          </Select> */}
         </div>
-        <div className="flex flex-col gap-4 w-full py-6">
+        {/* <div className="flex flex-col gap-4 w-full py-6">
           <Table>
             <TableHeader>
               <TableRow>
@@ -144,7 +186,9 @@ export default function Page() {
               </TableRow>
             </TableHeader>
           </Table>
-        </div>
+        </div> */}
+
+        <Leaderboard />
       </div>
     </div>
   );

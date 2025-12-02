@@ -257,6 +257,10 @@ export const addReportApi = async (
   return howl(`/admin-dashboard/create-report`, {method:"POST",body,token});
 };
 
+export const deleteReport = async (token: string,id:string|number)=>{
+  return howl(`/admin-dashboard/delete-report/${id}`, {method:"DELETE",token});
+}
+
 
 export const createNotif = async (token: string, body:{name:string,message:string,role:string,status:string}):Promise<{
   status: string
@@ -291,4 +295,32 @@ export const updateNotifApi = async (token: string,id:string|number, body:{name:
 
 export const deleteNotif = async (token: string,id:string|number)=>{
   return howl(`/notification/delete/${id}`, {method:"DELETE",token});
+}
+
+
+export const getSubsAPI = async (token: string):Promise<{
+  status: string
+  message: string
+  data: {
+    plans: Array<{
+      id: number
+      name: string
+      price: string
+      interval: string
+      features: Array<string>
+      is_active: boolean
+      is_current: boolean
+      is_trial_active: boolean
+    }>
+    user_subscription: any
+  }
+}
+>=>{
+return howl(`/subscription/plans`, {
+method: 'GET',token});
+}
+
+export const updateSubsAPI = async (token: string,id:string|number,body:any):Promise<any>=>{
+return howl(`/admin-dashboard/update-plan/${id}?_method=PUT`, {
+method: "POST",token,body});
 }

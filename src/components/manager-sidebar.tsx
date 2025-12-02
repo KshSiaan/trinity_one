@@ -81,7 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <div className="h-20 w-full flex justify-center items-center">
           <Image
-            src={"/logo-db.png"}
+            src={"/image/logo/kevin-logo.svg"}
             height={200}
             width={200}
             className="h-full object-contain"

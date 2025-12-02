@@ -51,10 +51,12 @@ export default function Page() {
   const [categoryName, setCategoryName] = useState("");
   // ADD DIALOG STATE
   const [openAdd, setOpenAdd] = useState(false);
+
   const { data, isPending } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategoriesApi(token),
   });
+
   // ADD CATEGORY
   const { mutate } = useMutation({
     mutationKey: ["add_category"],
