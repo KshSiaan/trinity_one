@@ -1,279 +1,145 @@
 "use client";
 
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Target } from "lucide-react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
+  CartesianGrid,
+  Cell,
 } from "recharts";
-import { TrendingUp, Target, AlertTriangle } from "lucide-react";
-import { useCookies } from "react-cookie";
-import { useQuery } from "@tanstack/react-query";
-import { howl, idk } from "@/lib/utils";
-import { TeammemberType } from "@/lib/api/manager-dashboard-type";
 
-const chartData = [
-  { quarter: "Q1", goalProgress: 35, teamProductivity: 42 },
-  { quarter: "Q2", goalProgress: 45, teamProductivity: 58 },
-  { quarter: "Q3", goalProgress: 65, teamProductivity: 72 },
-  { quarter: "Q4", goalProgress: 78, teamProductivity: 85 },
+const yearlyData = [
+  { category: "Sales", roi: 120 },
+  { category: "Marketing", roi: 90 },
+  { category: "Operations", roi: 140 },
+  { category: "Finance", roi: 110 },
+  { category: "HR", roi: 95 },
+  { category: "Customer Success", roi: 130 },
+  { category: "IT", roi: 155 },
+  { category: "Legal", roi: 80 },
+  { category: "Admin", roi: 100 },
+  { category: "Procurement", roi: 115 },
+  { category: "QA", roi: 125 },
+  { category: "Support", roi: 102 },
 ];
 
-const chartConfig = {
-  goalProgress: {
-    label: "Avg Goal Progress",
-    color: "hsl(var(--chart-1))",
-  },
-  teamProductivity: {
-    label: "Team Productivity Inc",
-    color: "hsl(var(--chart-2))",
-  },
-};
-
-const riskData = [
-  {
-    member: "Master React Hooks",
-    riskFactor: "Disengagement",
-    issue: "Missed deadline, low participation",
-    action: "Re-initiate AI summary",
-  },
-  {
-    member: "Master React Hooks",
-    riskFactor: "Disengagement",
-    issue: "Missed deadline, low participation",
-    action: "Re-initiate AI summary",
-  },
-  {
-    member: "Master React Hooks",
-    riskFactor: "Disengagement",
-    issue: "Missed deadline, low participation",
-    action: "Re-initiate AI summary",
-  },
-  {
-    member: "Master React Hooks",
-    riskFactor: "Disengagement",
-    issue: "Missed deadline, low participation",
-    action: "Re-initiate AI summary",
-  },
-  {
-    member: "Master React Hooks",
-    riskFactor: "Disengagement",
-    issue: "Missed deadline, low participation",
-    action: "Generate AI summary",
-  },
-  {
-    member: "Master React Hooks",
-    riskFactor: "Disengagement",
-    issue: "Missed deadline, low participation",
-    action: "Generate AI summary",
-  },
-  {
-    member: "Master React Hooks",
-    riskFactor: "Disengagement",
-    issue: "Missed deadline, low participation",
-    action: "Generate AI summary",
-  },
+const monthlyData = [
+  { category: "Sales", roi: 40 },
+  { category: "Marketing", roi: 55 },
+  { category: "Operations", roi: 70 },
+  { category: "Finance", roi: 45 },
+  { category: "HR", roi: 30 },
+  { category: "Customer Success", roi: 60 },
+  { category: "IT", roi: 75 },
+  { category: "Legal", roi: 32 },
+  { category: "Admin", roi: 44 },
+  { category: "Procurement", roi: 58 },
+  { category: "QA", roi: 67 },
+  { category: "Support", roi: 41 },
 ];
 
-export default function Page() {
-  const [{ token }] = useCookies(["token"]);
+const weeklyData = [
+  { category: "Sales", roi: 10 },
+  { category: "Marketing", roi: 15 },
+  { category: "Operations", roi: 20 },
+  { category: "Finance", roi: 12 },
+  { category: "HR", roi: 8 },
+  { category: "Customer Success", roi: 16 },
+  { category: "IT", roi: 22 },
+  { category: "Legal", roi: 7 },
+  { category: "Admin", roi: 11 },
+  { category: "Procurement", roi: 14 },
+  { category: "QA", roi: 18 },
+  { category: "Support", roi: 9 },
+];
 
-  // Fetch reports
-  const { data, isPending } = useQuery({
-    queryKey: ["report"],
-    queryFn: (): idk => howl(`/manager/dashboard`, { method: "GET", token }),
-  });
+// 🎨 Color palette (12 unique colors)
+const colors = [
+  "#3B82F6", // blue
+  "#10B981", // green
+  "#F59E0B", // amber
+  "#EF4444", // red
+  "#8B5CF6", // violet
+  "#EC4899", // pink
+  "#6366F1", // indigo
+  "#14B8A6", // teal
+  "#F97316", // orange
+  "#84CC16", // lime
+  "#0EA5E9", // sky
+  "#A855F7", // purple
+];
 
-  const teamMember: TeammemberType[] = data?.data?.team_members || [];
+export default function RoiImpactChart() {
+  const [filter, setFilter] = React.useState("yearly");
 
-  console.log("manager data is", teamMember);
+  const getCurrentData = () => {
+    if (filter === "yearly") return yearlyData;
+    if (filter === "monthly") return monthlyData;
+    return weeklyData;
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Main Content */}
-      <main className="w-full">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Chart Section */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
-                Personal Goal vs Professional KPI Correlation
-              </CardTitle>
-              <CardDescription>
-                Tracking goal progress and team productivity over quarters
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="quarter" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Line
-                      type="monotone"
-                      dataKey="goalProgress"
-                      stroke="var(--color-chart-1)"
-                      strokeWidth={2}
-                      dot={{ fill: "var(--color-chart-1)" }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="teamProductivity"
-                      stroke="var(--color-chart-2)"
-                      strokeWidth={2}
-                      dot={{ fill: "var(--color-chart-2)" }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card>
+    <div className="w-full md:col-span-2">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+            <Target className="h-5 w-5" />
+            ROI Impact by Goal Category
+          </CardTitle>
 
-          {/* ROI Tracking */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                ROI Tracking (Team Impact)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">
-                    Productivity Increases
-                  </span>
-                  <Badge
-                    variant="secondary"
-                    className="bg-green-100 text-green-800"
-                  >
-                    +12%
-                  </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Correlated with a 20% increase in personal goal completion
-                  this quarter.
-                </p>
-              </div>
+          {/* Filter Dropdown */}
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="yearly">Yearly</SelectItem>
+              <SelectItem value="monthly">Monthly</SelectItem>
+              <SelectItem value="weekly">Weekly</SelectItem>
+            </SelectContent>
+          </Select>
+        </CardHeader>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">
-                    Productivity Increases
-                  </span>
-                  <Badge
-                    variant="secondary"
-                    className="bg-green-100 text-green-800"
-                  >
-                    +12%
-                  </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Correlated with a 20% increase in personal goal completion
-                  this quarter.
-                </p>
-              </div>
+        <CardContent className="p-6">
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={getCurrentData()}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                <XAxis dataKey="category" />
+                <YAxis />
+                <Tooltip />
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">
-                    Productivity Increases
-                  </span>
-                  <Badge
-                    variant="secondary"
-                    className="bg-green-100 text-green-800"
-                  >
-                    +12%
-                  </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Correlated with a 20% increase in personal goal completion
-                  this quarter.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                {/* Multi-color bar support */}
 
-        {/* Risk Assessment Table */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5" />
-              Risk Assessment & Engagement Tracking
-            </CardTitle>
-            <CardDescription>
-              Monitor team member engagement and identify potential risks
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Member</TableHead>
-                  <TableHead>Risk Factor</TableHead>
-                  <TableHead className="hidden md:table-cell">Issue</TableHead>
-                  <TableHead>Suggested Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {teamMember.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{item.member}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="bg-yellow-50 text-yellow-800 border-yellow-200"
-                      >
-                        {item.engagement}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                      {item.kpi_status}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100"
-                      >
-                        ✨Generate AI summary
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </main>
+                <Bar
+                  dataKey="roi"
+                  barSize={40}
+                  radius={[6, 6, 0, 0]}
+                  isAnimationActive={false}
+                  activeBar={false}
+                >
+                  {getCurrentData().map((entry, i) => (
+                    <Cell key={i} fill={colors[i % colors.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
