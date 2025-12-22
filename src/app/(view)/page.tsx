@@ -3,20 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import {
-  ArrowRight,
-  Shield,
-  Users,
-  BarChart3,
-  Clock,
-  CheckCircle,
-} from "lucide-react";
+import { ArrowRight, Shield, Users } from "lucide-react";
 import Link from "next/link";
 
 export default function Page() {
   return (
     <main className="min-h-screen bg-background/95">
-      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xl font-semibold text-foreground">
@@ -25,7 +18,7 @@ export default function Page() {
           </div>
           <div className="">- Your front end dev</div>
         </div>
-      </header>
+      </header> */}
 
       {/* Hero Section */}
       <section className="py-20 px-4">

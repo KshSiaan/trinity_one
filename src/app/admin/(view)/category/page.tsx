@@ -162,6 +162,7 @@ export default function Page() {
                 </div>
 
                 <h3>{category.name}</h3>
+                <h3 className=" text-sm ">{category.description}</h3>
               </div>
 
               <div>
@@ -234,12 +235,12 @@ export default function Page() {
         {/* ADD NEW CATEGORY */}
         <CardFooter className="flex justify-center items-center">
           <Dialog open={openAdd} onOpenChange={setOpenAdd}>
-            <DialogTrigger asChild>
+            {/* <DialogTrigger asChild>
               <Button onClick={() => setOpenAdd(true)}>
                 <PlusIcon />
                 Add a new category
               </Button>
-            </DialogTrigger>
+            </DialogTrigger> */}
 
             <DialogContent className="min-w-[80dvw]">
               <DialogHeader>
