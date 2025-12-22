@@ -1,6 +1,24 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { TeammemberType } from "@/lib/api/manager-dashboard-type";
 import { howl, idk } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import { AlertTriangle } from "lucide-react";
 import React from "react";
 import { useCookies } from "react-cookie";
 

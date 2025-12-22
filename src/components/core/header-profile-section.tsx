@@ -27,7 +27,7 @@ export default function HeaderProfSection() {
         <AvatarImage
           className="object-cover object-center"
           src={
-            imgCreator(data.data.avatar) ??
+            imgCreator(data?.data?.avatar) ??
             "https://avatar.iran.liara.run/public"
           }
         />

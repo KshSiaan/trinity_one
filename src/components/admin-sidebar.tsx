@@ -38,6 +38,8 @@ const data = {
       items: [
         { title: "Account", url: `${prefix}/account` },
         { title: "Terms & Conditions", url: `${prefix}/tnc` },
+        { title: "Privacy & Policy", url: `${prefix}/privacy` },
+        { title: "Support", url: `${prefix}/support` },
       ],
     },
   ],
