@@ -133,10 +133,10 @@ export default function Page() {
             <TableBody>
               {data?.data?.map((r: any, id: number) => (
                 <TableRow key={id}>
-                  <TableCell>{r.name}</TableCell>
-                  <TableCell>{r.metrics?.engagement_score}</TableCell>
-                  <TableCell>{r.schedule}</TableCell>
-                  <TableCell>{r.last_generated_at}</TableCell>
+                  <TableCell>{r?.name}</TableCell>
+                  <TableCell>{r?.metrics?.engagement_score}</TableCell>
+                  <TableCell>{r?.schedule}</TableCell>
+                  <TableCell>{r?.last_generated_at}</TableCell>
 
                   <TableCell className="flex items-center gap-3">
                     {/* Download */}
