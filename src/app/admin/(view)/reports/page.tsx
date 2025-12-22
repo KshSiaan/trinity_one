@@ -131,7 +131,7 @@ export default function Page() {
             </TableHeader>
 
             <TableBody>
-              {data?.data?.map((r, id: number) => (
+              {data?.data?.map((r: any, id: number) => (
                 <TableRow key={id}>
                   <TableCell>{r.name}</TableCell>
                   <TableCell>{r.metrics?.engagement_score}</TableCell>
