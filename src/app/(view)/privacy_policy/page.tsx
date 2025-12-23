@@ -1,5 +1,7 @@
 import React from "react";
-
+//helollsdfsdfsdfsdf
+//sdfsd
+//dsfsdsdfsd
 const PrivacyPolicy = () => {
   return (
     <div className=" mx-auto px-6 py-12 leading-relaxed">
@@ -31,7 +33,7 @@ const PrivacyPolicy = () => {
           not access or use the App.
         </p>
       </section>
-
+      {/*  */}
       <section className="mb-8">
         <h2 className="text-2xl font-bold mb-4">2. Information We Collect</h2>
 
