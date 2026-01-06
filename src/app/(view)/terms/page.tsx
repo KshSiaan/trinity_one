@@ -18,6 +18,7 @@ export default function Page() {
 
   return (
     <div
+      className="p-6"
       // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
       dangerouslySetInnerHTML={{
         __html: cleanHTML,
