@@ -245,7 +245,7 @@ export const getTermsApi = async (
     method: "GET",token});
 }
 export const getPrivacy = async (
-  token: string
+  token?: string
 ):Promise<{
   status: string
   message: string
