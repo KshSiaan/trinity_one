@@ -244,10 +244,29 @@ export const getTermsApi = async (
   return howl(`/term-condition/index`, {
     method: "GET",token});
 }
+export const getPrivacy = async (
+  token: string
+):Promise<{
+  status: string
+  message: string
+  data: {
+    id: number
+    content: string
+    created_at: string
+    updated_at: string
+  }
+}>=>{
+  return howl(`/privacy-policy/index`, {
+    method: "GET",token});
+}
 
 export const updateTermsApi = async (
 token: string, content: string)=>{
   return howl(`/term-condition/store`, {method:"POST",token,body:{content}});
+}
+export const updatePolicy = async (
+token: string, content: string)=>{
+  return howl(`/privacy-policy/store`, {method:"POST",token,body:{content}});
 }
 
 export const addReportApi = async (
