@@ -230,7 +230,7 @@ export const deleteCategoryApi = async (
 
 //--------------Terms APIs----------------//
 export const getTermsApi = async (
-  token: string
+  token?: string
 ):Promise<{
   status: string
   message: string

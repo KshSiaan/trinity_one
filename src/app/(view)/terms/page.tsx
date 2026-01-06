@@ -1,13 +1,13 @@
 "use client";
-import { getPrivacy } from "@/lib/api/admin";
+import { getPrivacy, getTermsApi } from "@/lib/api/admin";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import DOMPurify from "dompurify";
 
 export default function Page() {
   const { data, isLoading } = useQuery({
-    queryKey: ["privacy"],
-    queryFn: () => getPrivacy(),
+    queryKey: ["terms"],
+    queryFn: () => getTermsApi(),
   });
 
   if (isLoading) {
