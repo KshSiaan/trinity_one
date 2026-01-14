@@ -34,9 +34,17 @@ export default function Page() {
       if (res.data.token) {
         if (token) {
           removeToken("token");
-          setToken("token", res.data.token);
+          setToken("token", res.data.token, {
+            path: "/", // THIS is what makes it visible everywhere
+            sameSite: "lax",
+            secure: true,
+          });
         } else {
-          setToken("token", res.data.token);
+          setToken("token", res.data.token, {
+            path: "/", // THIS is what makes it visible everywhere
+            sameSite: "lax",
+            secure: true,
+          });
         }
         toast.success(res.message ?? "Successfully logged in!");
         navig.push("/manager");

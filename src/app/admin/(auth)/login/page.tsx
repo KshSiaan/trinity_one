@@ -32,7 +32,7 @@ import { useRouter } from "next/navigation";
 
 // 🧩 Validation schema
 const formSchema = z.object({
-  email: z.string().email({ message: "Enter a valid email" }),
+  email: z.email({ message: "Enter a valid email" }),
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters" }),
@@ -62,14 +62,12 @@ export default function Page() {
         toast.error("Error #290 Token not found");
         return;
       }
-      if (token) {
-        removeToken("token");
-        setToken("token", res.data.token);
-        toast.success(res.message ?? "Success!");
-        navig.push("/admin");
-        return;
-      }
-      setToken("token", res.data.token);
+      setToken("token", res.data.token, {
+        path: "/", // THIS is what makes it visible everywhere
+        sameSite: "lax",
+        secure: true,
+      });
+
       toast.success(res.message ?? "Success!");
       navig.push("/admin");
     },
