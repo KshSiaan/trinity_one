@@ -59,7 +59,7 @@ export function CompanyInfoCard() {
       manager_full_name: "",
       manager_email: "",
       manager_phone: "",
-      manager_code: "",
+      password: "",
       send_welcome_email: false,
       company_logo: undefined,
     } as CompanyFormData,
@@ -88,7 +88,7 @@ export function CompanyInfoCard() {
     formData.append("manager_full_name", data.manager_full_name);
     formData.append("manager_email", data.manager_email);
     formData.append("manager_phone", data.manager_phone);
-    formData.append("manager_code", data.manager_code);
+    formData.append("password", data.password);
     formData.append("send_welcome_email", data.send_welcome_email ? "1" : "0");
 
     // Append file if present
@@ -101,7 +101,7 @@ export function CompanyInfoCard() {
     for (const [key, value] of formData.entries()) {
       if (value instanceof File) {
         console.log(
-          `${key}: File(${value.name}, ${value.type}, ${value.size} bytes)`
+          `${key}: File(${value.name}, ${value.type}, ${value.size} bytes)`,
         );
       } else {
         console.log(`${key}: ${value}`);
@@ -306,11 +306,11 @@ export function CompanyInfoCard() {
               />
               <FormField
                 control={form.control}
-                name="manager_code"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-muted-foreground">
-                      Manager Code<span className="text-red-500">*</span>
+                      Manager Password<span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input

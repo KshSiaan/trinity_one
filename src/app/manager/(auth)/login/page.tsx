@@ -1,93 +1,146 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import Link from "next/link";
+
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
 } from "@/components/ui/card";
-import { InputOTP, InputOTPSlot } from "@/components/ui/input-otp";
-import { employeeLoginApi } from "@/lib/api/auth";
-import { idk } from "@/lib/utils";
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useCookies } from "react-cookie";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { loginApi } from "@/lib/api/auth";
 import { toast } from "sonner";
+import { idk } from "@/lib/utils";
+import { useCookies } from "react-cookie";
+import { useRouter } from "next/navigation";
+
+// 🧩 Validation schema
+const formSchema = z.object({
+  email: z.email({ message: "Enter a valid email" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
+});
 
 export default function Page() {
-  const navig = useRouter();
-  const [pin, setPin] = useState("");
   const [{ token }, setToken, removeToken] = useCookies(["token"]);
+  const navig = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationKey: ["login"],
-    mutationFn: () => {
-      return employeeLoginApi({ body: { pin } });
+    mutationFn: (body: z.infer<typeof formSchema>) => {
+      return loginApi({ body });
     },
     onError: (err) => {
       toast.error(err.message ?? "Failed to complete this request");
     },
     onSuccess: (res: idk) => {
-      if (res.data.token) {
-        if (token) {
-          removeToken("token");
-          setToken("token", res.data.token, {
-            path: "/", // THIS is what makes it visible everywhere
-            sameSite: "lax",
-            secure: true,
-          });
-        } else {
-          setToken("token", res.data.token, {
-            path: "/", // THIS is what makes it visible everywhere
-            sameSite: "lax",
-            secure: true,
-          });
-        }
-        toast.success(res.message ?? "Successfully logged in!");
-        navig.push("/manager");
+      if (!res.data.token) {
+        toast.error("Error #290 Token not found");
+        return;
       }
+      setToken("token", res.data.token, {
+        path: "/", // THIS is what makes it visible everywhere
+        sameSite: "lax",
+        secure: true,
+      });
+      toast.success(res.message ?? "Success!");
+      navig.push("/manager");
     },
   });
 
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("Form submitted:", values);
+    mutate(values);
+  }
+
   return (
-    <main className="bg-gradient-to-tl from-[#17a14c41] to-[#8d37e434] h-dvh w-dvw flex justify-center items-center">
-      <Card className="min-w-1/3 aspect-square flex flex-col justify-center items-center gap-12">
-        <CardHeader className="px-12 w-full ">
-          <CardTitle className="text-4xl! text-center">
-            Manager Portal
-          </CardTitle>
-          <CardDescription className="text-center mt-2">
-            Enter your 6- digit Manager PIN to access your account
+    <main className="bg-gradient-to-tl from-[#17a14c41] to-[#8d37e434] h-dvh w-dvw flex justify-center items-center p-6">
+      <Card className="min-w-full lg:min-w-2xl flex flex-col justify-center items-center gap-12 py-10">
+        <CardHeader className="px-12 w-full text-center">
+          <CardTitle className="text-4xl">Manager Login</CardTitle>
+          <CardDescription className="mt-2">
+            Secure access to your administration dashboard
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex justify-center items-center px-12 w-full">
-          <InputOTP
-            maxLength={6}
-            value={pin}
-            onChange={setPin}
-            // onPaste={() => {
-            //   setTimeout(() => mutate(), 0);
-            // }}
-          >
-            <InputOTPSlot index={0} className="rounded-lg!" />
-            <InputOTPSlot index={1} className="rounded-lg!" />
-            <InputOTPSlot index={2} className="rounded-lg!" />
-            <InputOTPSlot index={3} className="rounded-lg!" />
-            <InputOTPSlot index={4} className="rounded-lg!" />
-            <InputOTPSlot index={5} className="rounded-lg!" />
-          </InputOTP>
+
+        <CardContent className="px-12 w-full">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Enter your password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                className="w-2/3 mx-auto block"
+                disabled={isPending}
+              >
+                {isPending ? "Logging in..." : "Login"}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
-        <CardFooter className="w-full">
+
+        <CardFooter className="w-full flex flex-col gap-4">
           <Button
             className="w-2/3 mx-auto"
-            onClick={() => {
-              mutate();
-            }}
+            variant="ghost"
+            disabled={isPending}
+            asChild
           >
-            Log in
+            <Link href="/manager/forgot">Forgot Password</Link>
           </Button>
         </CardFooter>
       </Card>

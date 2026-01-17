@@ -45,7 +45,8 @@ interface Company {
   manager_full_name: string;
   manager_email: string;
   manager_phone: string;
-  manager_code: string;
+  password: string;
+  manager_code?: string;
   send_welcome_email: number;
   created_at: string;
   updated_at: string;
@@ -58,10 +59,10 @@ export default function Companies({
 }: CompaniesProps) {
   const [{ token }] = useCookies(["token"]);
   const [selectedCompany, setSelectedCompany] = React.useState<Company | null>(
-    null
+    null,
   );
   const [companyToDelete, setCompanyToDelete] = React.useState<Company | null>(
-    null
+    null,
   );
   const qcl = useQueryClient();
 
@@ -120,7 +121,7 @@ export default function Companies({
 
   return (
     <>
-      {companies.map((company) => (
+      {companies.map((company: any) => (
         <TableRow key={company.id}>
           <TableCell className="flex items-center gap-2">
             <Avatar>
@@ -130,9 +131,9 @@ export default function Companies({
             <p>{company.company_name}</p>
           </TableCell>
           <TableCell>{company.manager_full_name}</TableCell>
-          <TableCell>
-            <Badge variant={"secondary"}>{company.manager_code}</Badge>
-          </TableCell>
+          {/* <TableCell>
+            <Badge variant={"secondary"}>{company.password}</Badge>
+          </TableCell> */}
           <TableCell>
             {new Date(company.created_at).toLocaleDateString()}
           </TableCell>
@@ -165,9 +166,9 @@ export default function Companies({
                       <h3 className="text-xl font-semibold">
                         {selectedCompany?.company_name}
                       </h3>
-                      <Badge className="mt-2">
+                      {/* <Badge className="mt-2">
                         {selectedCompany?.manager_code}
-                      </Badge>
+                      </Badge> */}
                     </div>
                   </div>
 
@@ -209,9 +210,9 @@ export default function Companies({
                           {selectedCompany?.manager_full_name}
                         </p>
                       </div>
-                      <div>
+                      <div className="">
                         <p className="text-sm text-muted-foreground">
-                          Manager Code
+                          Password
                         </p>
                         <p className="font-medium">
                           {selectedCompany?.manager_code}
@@ -256,7 +257,7 @@ export default function Companies({
                         <p className="font-medium">
                           {selectedCompany?.created_at &&
                             new Date(
-                              selectedCompany.created_at
+                              selectedCompany.created_at,
                             ).toLocaleDateString()}
                         </p>
                       </div>
@@ -267,7 +268,7 @@ export default function Companies({
                         <p className="font-medium">
                           {selectedCompany?.updated_at &&
                             new Date(
-                              selectedCompany.updated_at
+                              selectedCompany.updated_at,
                             ).toLocaleDateString()}
                         </p>
                       </div>
