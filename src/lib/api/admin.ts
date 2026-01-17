@@ -30,7 +30,7 @@ export const getCompaniesApi = async (
       manager_full_name: string
       manager_email: string
       manager_phone: string
-      manager_code: string
+      password: string
       send_welcome_email: number
       created_at: string
       updated_at: string

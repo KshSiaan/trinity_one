@@ -27,10 +27,10 @@ export const companyFormSchema = z.object({
   manager_phone: z
     .string()
     .min(1, "Manager phone is required"),
-  manager_code: z
+  password: z
     .string()
-    .min(1, "Manager code is required")
-    .min(3, "Manager code must be at least 3 characters"),
+    .min(1, "Manager password is required")
+    .min(8, "Manager password must be at least 8 characters"),
   send_welcome_email: z.boolean().default(false),
   company_logo: z.instanceof(File).optional(),
 });

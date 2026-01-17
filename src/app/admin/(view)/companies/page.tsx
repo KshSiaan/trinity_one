@@ -69,7 +69,7 @@ export default function Page() {
                 <TableRow>
                   <TableHead>Company Name</TableHead>
                   <TableHead>Manager</TableHead>
-                  <TableHead>Manager Code</TableHead>
+                  {/* <TableHead>Manager Code</TableHead> */}
                   {/* <TableHead>Employees</TableHead> */}
                   <TableHead>Created Date</TableHead>
                   <TableHead>Actions</TableHead>
@@ -111,7 +111,7 @@ export default function Page() {
                         {page}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
                 <PaginationItem>
                   <PaginationNext
