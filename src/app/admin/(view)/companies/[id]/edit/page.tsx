@@ -45,7 +45,7 @@ export default function EditCompanyPage() {
       manager_full_name: "",
       manager_email: "",
       manager_phone: "",
-      manager_code: "",
+      password: "",
       send_welcome_email: false,
       company_logo: undefined,
     } as CompanyFormData,
@@ -70,7 +70,7 @@ export default function EditCompanyPage() {
         manager_full_name: company.manager_full_name,
         manager_email: company.manager_email,
         manager_phone: company.manager_phone,
-        manager_code: company.manager_code,
+        password: company.manager_code ?? "",
         send_welcome_email: company.send_welcome_email === 1,
         company_logo: undefined,
       });
@@ -119,7 +119,7 @@ export default function EditCompanyPage() {
     formData.append("manager_full_name", data.manager_full_name);
     formData.append("manager_email", data.manager_email);
     formData.append("manager_phone", data.manager_phone);
-    formData.append("manager_code", data.manager_code);
+    formData.append("password", data.password);
     formData.append("send_welcome_email", data.send_welcome_email ? "1" : "0");
 
     // Append file if present
@@ -345,7 +345,7 @@ export default function EditCompanyPage() {
               />
               <FormField
                 control={form.control}
-                name="manager_code"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-muted-foreground">
