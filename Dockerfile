@@ -16,8 +16,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Set API URL for Build Time (NEXT_PUBLIC variables are baked in at build time)
-ARG NEXT_PUBLIC_API_BASE_URL
-ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+ARG NEXT_PUBLIC_SERVER
+ENV NEXT_PUBLIC_SERVER=${NEXT_PUBLIC_SERVER}
 
 # Disable Next.js telemetry during build
 ENV NEXT_TELEMETRY_DISABLED=1
