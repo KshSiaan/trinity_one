@@ -1,5 +1,4 @@
 name: Build and Push Frontend Image to Docker Hub
-
 on:
   push:
     branches:
