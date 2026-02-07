@@ -43,9 +43,9 @@ export function ChartPieDonut({
   data: { name: string; value: number }[];
 }) {
   const chartData = data?.map((item) => ({
-    browser: item.name,
-    visitors: item.value,
-    fill: `var(--color-${item.name.toLowerCase()})`,
+    browser: item?.name,
+    visitors: item?.value,
+    fill: `var(--color-${item?.name?.toLowerCase()})`,
   }));
 
   return (

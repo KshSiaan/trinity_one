@@ -1,9 +1,6 @@
 "use client";
-import React from "react";
 import { Button } from "./button";
 import { LogOutIcon } from "lucide-react";
-import { useCookies } from "react-cookie";
-import { useRouter } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,10 +12,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./alert-dialog";
+import Link from "next/link";
 
 export default function LogoutButton() {
-  const [, , removeToken] = useCookies(["token"]);
-  const navig = useRouter();
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -40,13 +36,8 @@ export default function LogoutButton() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() => {
-              removeToken("token");
-              navig.push("/");
-            }}
-          >
-            Log out
+          <AlertDialogAction asChild>
+            <Link href={"/logout"}>Log out</Link>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -317,7 +317,6 @@ export function CompanyInfoCard() {
                         placeholder="e.g. 123123"
                         className="border-gray-300"
                         {...field}
-                        type="number"
                       />
                     </FormControl>
                     <FormMessage />

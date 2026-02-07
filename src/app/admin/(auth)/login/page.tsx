@@ -62,14 +62,18 @@ export default function Page() {
         toast.error("Error #290 Token not found");
         return;
       }
-      setToken("token", res.data.token, {
-        path: "/", // THIS is what makes it visible everywhere
-        sameSite: "lax",
-        secure: true,
-      });
+      try {
+        setToken("token", res.data.token, {
+          path: "/",
+          secure: true,
+        });
 
-      toast.success(res.message ?? "Success!");
-      navig.push("/admin");
+        toast.success(res.message ?? "Success!");
+        window.location.href = "/admin";
+      } catch (error) {
+        console.error(error);
+        toast.error("Something went wrong");
+      }
     },
   });
 

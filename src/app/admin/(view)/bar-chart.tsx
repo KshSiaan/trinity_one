@@ -24,8 +24,8 @@ export function ChartBarDefault({
   data: { category_name: string; value: number }[];
 }) {
   const chartData = data?.map((item) => ({
-    month: item.category_name,
-    desktop: item.value,
+    month: item?.category_name,
+    desktop: item?.value,
   }));
 
   return (

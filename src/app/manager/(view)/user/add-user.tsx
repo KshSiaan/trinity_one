@@ -95,7 +95,7 @@ export function AddUserDialog() {
     formData.append("role", values.role.toUpperCase());
     formData.append(
       "department_id",
-      values.department === "it" ? "1" : values.department === "hr" ? "2" : "3"
+      values.department === "it" ? "1" : values.department === "hr" ? "2" : "3",
     );
     formData.append("status", values.status);
     formData.append("send_welcome_email", values.sendWelcome ? "1" : "0");
@@ -191,7 +191,7 @@ export function AddUserDialog() {
                         <SelectValue placeholder="Select Role" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="USER">User</SelectItem>
+                        {/* <SelectItem value="USER">User</SelectItem> */}
                         <SelectItem value="MENTOR">Mentor</SelectItem>
                         <SelectItem value="EMPLOYEE">Employee</SelectItem>
                       </SelectContent>
