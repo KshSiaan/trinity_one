@@ -25,8 +25,8 @@ export function ChartLineMultiple({ data }: { data: any }) {
   const arr = Array.isArray(data) ? data : [data];
 
   // extract department names
-  const departmentNames: idk = (arr[0].departments ?? []).map(
-    (d: any) => d.department_name
+  const departmentNames: idk = (arr[0]?.departments ?? []).map(
+    (d: any) => d.department_name,
   );
 
   // build chart config
@@ -34,7 +34,7 @@ export function ChartLineMultiple({ data }: { data: any }) {
     (
       acc: { [x: string]: { label: any; color: string } },
       name: string | number,
-      idx: number
+      idx: number,
     ) => {
       acc[name] = {
         label: name,
@@ -42,15 +42,15 @@ export function ChartLineMultiple({ data }: { data: any }) {
       };
       return acc;
     },
-    {} as ChartConfig
+    {} as ChartConfig,
   );
 
   // convert to recharts format
   const chartData = arr.map((item) => {
-    const row: any = { month: item.month };
+    const row: any = { month: item?.month };
 
-    (item.departments ?? []).forEach((dep: any) => {
-      row[dep.department_name] = dep.value;
+    (item?.departments ?? []).forEach((dep: any) => {
+      row[dep?.department_name] = dep?.value;
     });
 
     return row;

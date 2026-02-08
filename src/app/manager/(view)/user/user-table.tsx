@@ -167,8 +167,8 @@ export default function UsersTable() {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    <Pencil className="h-4 w-4 cursor-pointer text-muted-foreground" />
-                    <Trash2 className="h-4 w-4 cursor-pointer text-muted-foreground" />
+                    {/* <Pencil className="h-4 w-4 cursor-pointer text-muted-foreground" />
+                    <Trash2 className="h-4 w-4 cursor-pointer text-muted-foreground" /> */}
                   </TableCell>
                 </TableRow>
               );

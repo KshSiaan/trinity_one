@@ -39,7 +39,7 @@ const data = {
         { title: "Account", url: `${prefix}/account` },
         { title: "Terms & Conditions", url: `${prefix}/tnc` },
         { title: "Privacy & Policy", url: `${prefix}/privacy` },
-        { title: "Support", url: `${prefix}/support` },
+        // { title: "Support", url: `${prefix}/support` },
       ],
     },
   ],
@@ -110,14 +110,14 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           aria-label="Toggle theme"
           className={cn(
             "py-2 h-16 border px-2 rounded-full relative transition-colors w-full",
-            currentTheme === "light" ? "bg-sky-300" : "bg-zinc-900"
+            currentTheme === "light" ? "bg-sky-300" : "bg-zinc-900",
           )}
           onClick={() => setTheme(currentTheme === "light" ? "dark" : "light")}
         >
           <div
             className={cn(
               "rounded-full p-2 aspect-square size-12 bg-white hover:bg-zinc-100 absolute top-2 transition-all",
-              currentTheme === "light" ? "left-2" : "right-2"
+              currentTheme === "light" ? "left-2" : "right-2",
             )}
           />
           <div className="w-full h-full flex flex-row justify-between">

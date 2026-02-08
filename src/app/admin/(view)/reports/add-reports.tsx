@@ -96,6 +96,12 @@ export default function AddReportsForm() {
     queryFn: (): idk => howl(`/department/index`, { method: "GET", token }),
   });
 
+  const departments = Array.isArray(data?.data)
+    ? data.data
+    : Array.isArray(data?.data?.data)
+      ? data.data.data
+      : [];
+
   const { mutate } = useMutation({
     mutationKey: ["add-report"],
     mutationFn: (formData: FormData) => {
@@ -184,6 +190,10 @@ export default function AddReportsForm() {
                     <div className="flex justify-center items-center h-12">
                       <Loader2Icon className="animate-spin" />
                     </div>
+                  ) : !departments || departments?.length <= 0 ? (
+                    <p className="border p-2 rounded-lg px-2 text-sm text-muted-foreground bg-muted">
+                      No Departments available
+                    </p>
                   ) : (
                     <Select
                       value={field.value || ""}
@@ -193,7 +203,7 @@ export default function AddReportsForm() {
                         <SelectValue placeholder="Select Department" />
                       </SelectTrigger>
                       <SelectContent>
-                        {data?.data?.map((dept: any) => (
+                        {departments?.map((dept: any) => (
                           <SelectItem key={dept.id} value={String(dept.id)}>
                             {dept.name}
                           </SelectItem>
@@ -206,6 +216,7 @@ export default function AddReportsForm() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="schedule"
@@ -285,7 +296,7 @@ export default function AddReportsForm() {
                               const next = checked
                                 ? [...(field.value || []), opt.value]
                                 : (field.value || []).filter(
-                                    (v) => v !== opt.value
+                                    (v) => v !== opt.value,
                                   );
 
                               field.onChange(next);
@@ -314,7 +325,7 @@ export default function AddReportsForm() {
                 variant="outline"
                 className={cn(
                   "w-fit justify-start text-left font-normal",
-                  !date?.from && "text-muted-foreground"
+                  !date?.from && "text-muted-foreground",
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />

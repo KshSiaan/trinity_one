@@ -34,9 +34,9 @@ export default function HeaderProfSection() {
         <AvatarFallback>UI</AvatarFallback>
       </Avatar>
       <div className="flex flex-col justify-center items-start">
-        <p className="font-semibold">{data.data.name ?? "N/A"}</p>
+        <p className="font-semibold">{data?.data?.name ?? "N/A"}</p>
         <p className="text-muted-foreground text-xs">
-          {data.data.email ?? "N/A"}
+          {data?.data?.email ?? "N/A"}
         </p>
       </div>
     </div>

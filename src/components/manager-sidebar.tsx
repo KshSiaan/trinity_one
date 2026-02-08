@@ -5,6 +5,7 @@ import {
   BellIcon,
   BuildingIcon,
   ClipboardListIcon,
+  GroupIcon,
   LayoutDashboardIcon,
   Settings2,
   ShapesIcon,
@@ -42,6 +43,7 @@ const data = {
   projects: [
     { name: "Dashboard", url: `${prefix}`, icon: LayoutDashboardIcon },
     { name: "User", url: `${prefix}/user`, icon: User2Icon },
+    { name: "Department", url: `${prefix}/department`, icon: GroupIcon },
     { name: "Dream & Mentorship", url: `${prefix}/dream`, icon: TargetIcon },
     { name: "Analytics", url: `${prefix}/analytics`, icon: TrendingUpDown },
   ],
@@ -94,10 +96,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
+        {/** biome-ignore lint/a11y/noStaticElementInteractions: <explanation> */}
+        {/** biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
         <div
           className={cn(
             "py-2 h-16 border px-2 rounded-full relative transition-colors",
-            currentTheme === "light" ? "bg-sky-300" : "bg-zinc-900"
+            currentTheme === "light" ? "bg-sky-300" : "bg-zinc-900",
           )}
           onClick={() => {
             setTheme(currentTheme === "light" ? "dark" : "light");
@@ -106,7 +110,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <Button
             className={cn(
               "rounded-full p-2 aspect-square size-12 bg-white hover:bg-zinc-100 absolute top-2 transition-all",
-              currentTheme === "light" ? "left-2" : "right-2"
+              currentTheme === "light" ? "left-2" : "right-2",
             )}
             size="icon"
           />
