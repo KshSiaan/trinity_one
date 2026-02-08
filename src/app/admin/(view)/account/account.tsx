@@ -83,7 +83,6 @@ export default function Account() {
       form.setValue("phone_number", data.data.contact_number);
       setMail(data.data.email ?? "");
       setCurrentAvatar(imgCreator(data.data.avatar));
-      console.log(data.data);
     }
   }, [isPending, data, form]);
 
@@ -95,8 +94,6 @@ export default function Account() {
     if (values.avatar instanceof File) {
       formData.append("avatar", values.avatar);
     }
-
-    console.log("Submitting:", values);
     mutate(formData);
   };
 
