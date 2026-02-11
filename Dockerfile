@@ -7,7 +7,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json* ./
 # 'npm ci' is faster and safer for CI/CD than 'npm install'
-RUN npm ci --legacy-peer-deps 
+RUN npm install 
 
 # Stage 2: Code Builder
 FROM node:22-alpine AS builder
