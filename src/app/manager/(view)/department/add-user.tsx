@@ -136,7 +136,7 @@ export function AddUserDialog() {
                 {uploading ? (
                   <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  "Add User"
+                  "Add Department"
                 )}
               </Button>
             </DialogFooter>

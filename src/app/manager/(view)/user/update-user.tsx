@@ -21,11 +21,10 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2Icon, PlusIcon } from "lucide-react";
+import { Loader2Icon, PencilIcon } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCookies } from "react-cookie";
 import { howl, idk } from "@/lib/utils";
-
 import {
   Form,
   FormField,
@@ -36,16 +35,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { createUserApi } from "@/lib/api/manager";
 
 const userSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email"),
   role: z.string().min(1, "Role is required"),
-  department: z.string().min(1, "Department is required"),
+  department_id: z.string().min(1, "Department is required"),
   status: z.string().min(1, "Status is required"),
-  sendWelcome: z.boolean(),
-  employeePin: z
+  send_welcome_email: z.boolean(),
+  employee_code: z
     .string()
     .min(1, "Employee code is required")
     .regex(/^\d+$/, "Employee code must be numeric"),
@@ -53,19 +51,24 @@ const userSchema = z.object({
 
 type UserFormData = z.infer<typeof userSchema>;
 
-export function AddUserDialog() {
+export function UpdateUser({ data }: { data: idk }) {
   const [open, setOpen] = React.useState(false);
-  const [avatarFile, setAvatarFile] = React.useState<File | null>(null);
   const [{ token }] = useCookies(["token"]);
   const qcl = useQueryClient();
-  const { data, isPending } = useQuery({
+
+  const { data: deptData, isPending: deptLoading } = useQuery({
     queryKey: ["departments"],
     queryFn: (): idk => howl(`/department/index`, { method: "GET", token }),
   });
+
   const { mutate, isPending: uploading } = useMutation({
-    mutationKey: ["create_user"],
+    mutationKey: ["update_user"],
     mutationFn: (formData: FormData) => {
-      return createUserApi(formData, token);
+      return howl(`/manage-user/update/${data?.id}?_method=PUT`, {
+        method: "POST",
+        token,
+        body: formData,
+      });
     },
     onError: (err) => {
       toast.error(err.message ?? "Failed to complete this request");
@@ -75,16 +78,17 @@ export function AddUserDialog() {
       qcl.invalidateQueries({ queryKey: ["users"] });
     },
   });
+
   const form = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      role: "",
-      department: "",
-      status: "",
-      sendWelcome: true,
-      employeePin: "",
+      name: data?.user?.name ?? "",
+      email: data?.user?.email ?? "",
+      role: data?.user?.role ?? "",
+      department_id: data?.department_id ? String(data.department_id) : "",
+      status: data?.status ?? "",
+      send_welcome_email: false,
+      employee_code: data?.user?.employee_pin ?? "",
     },
   });
 
@@ -92,37 +96,32 @@ export function AddUserDialog() {
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("email", values.email);
-    formData.append("role", values.role.toUpperCase());
-    formData.append(
-      "department_id",
-      values.department === "it" ? "1" : values.department === "hr" ? "2" : "3",
-    );
+    formData.append("role", values.role);
+    formData.append("department_id", values.department_id);
     formData.append("status", values.status);
-    formData.append("send_welcome_email", values.sendWelcome ? "1" : "0");
-    formData.append("employee_pin", values.employeePin);
-    if (avatarFile) formData.append("avatar", avatarFile);
+    formData.append(
+      "send_welcome_email",
+      values.send_welcome_email ? "1" : "0",
+    );
+    formData.append("employee_code", values.employee_code);
 
     mutate(formData, {
       onSuccess: () => {
         setOpen(false);
       },
     });
-
-    // console.log("FormData entries:");
-    // for (const pair of formData.entries()) console.log(pair[0], pair[1]);
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <PlusIcon />
-          Add User
+        <Button variant="ghost" size="icon">
+          <PencilIcon className="cursor-pointer text-muted-foreground" />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Add New User</DialogTitle>
+          <DialogTitle>Update User</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -130,24 +129,6 @@ export function AddUserDialog() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="grid grid-cols-2 gap-6"
           >
-            {/* Avatar Upload */}
-            <div className="col-span-2 flex items-center gap-4 mb-4">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-200">
-                {avatarFile && (
-                  <img
-                    src={URL.createObjectURL(avatarFile)}
-                    alt="avatar"
-                    className="w-16 h-16 object-cover rounded-full"
-                  />
-                )}
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
-              />
-            </div>
-
             {/* Name */}
             <FormField
               control={form.control}
@@ -191,7 +172,6 @@ export function AddUserDialog() {
                         <SelectValue placeholder="Select Role" />
                       </SelectTrigger>
                       <SelectContent>
-                        {/* <SelectItem value="USER">User</SelectItem> */}
                         <SelectItem value="MENTOR">Mentor</SelectItem>
                         <SelectItem value="EMPLOYEE">Employee</SelectItem>
                       </SelectContent>
@@ -205,12 +185,12 @@ export function AddUserDialog() {
             {/* Department */}
             <FormField
               control={form.control}
-              name="department"
+              name="department_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Department</FormLabel>
                   <FormControl>
-                    {isPending ? (
+                    {deptLoading ? (
                       <div className="flex justify-center items-center h-12">
                         <Loader2Icon className="animate-spin" />
                       </div>
@@ -223,9 +203,9 @@ export function AddUserDialog() {
                           <SelectValue placeholder="Select Department" />
                         </SelectTrigger>
                         <SelectContent>
-                          {data?.data?.map((dept: any) => (
+                          {deptData?.data?.map((dept: idk) => (
                             <SelectItem key={dept.id} value={String(dept.id)}>
-                              {dept.name} ({dept.id})
+                              {dept.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -264,12 +244,10 @@ export function AddUserDialog() {
             {/* Employee Code */}
             <FormField
               control={form.control}
-              name="employeePin"
+              name="employee_code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    Employee Code <span className="text-red-500">*</span>
-                  </FormLabel>
+                  <FormLabel>Employee Code</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Enter employee code" />
                   </FormControl>
@@ -278,10 +256,10 @@ export function AddUserDialog() {
               )}
             />
 
-            {/* Welcome Email */}
+            {/* Send Welcome Email */}
             <FormField
               control={form.control}
-              name="sendWelcome"
+              name="send_welcome_email"
               render={({ field }) => (
                 <FormItem className="col-span-2 flex items-center gap-2 mt-2">
                   <FormControl>
@@ -306,6 +284,7 @@ export function AddUserDialog() {
               >
                 Cancel
               </Button>
+
               <Button
                 disabled={uploading}
                 type="submit"
@@ -314,7 +293,7 @@ export function AddUserDialog() {
                 {uploading ? (
                   <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  "Add User"
+                  "Update User"
                 )}
               </Button>
             </DialogFooter>
