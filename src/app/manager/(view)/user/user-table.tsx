@@ -13,7 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { AddUserDialog } from "./add-user";
 import { useCookies } from "react-cookie";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getUsersApi } from "@/lib/api/manager";
 import {
   Dialog,
@@ -25,13 +25,41 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { imgCreator } from "@/lib/functions";
+import { howl, idk } from "@/lib/utils";
+import { UpdateUser } from "./update-user";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 export default function UsersTable() {
   const [{ token }] = useCookies(["token"]);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["users"],
     queryFn: () => getUsersApi(token),
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["delete_user"],
+    mutationFn: (id: number) => {
+      return howl(`/department/delete/${id}`, { method: "DELETE", token });
+    },
+    onError: (err) => {
+      toast.error(err.message ?? "Failed to complete this request");
+    },
+    onSuccess: (res: idk) => {
+      toast.success(res.message ?? "Success!");
+      refetch();
+    },
   });
 
   const users = data?.data?.data ?? [];
@@ -77,10 +105,12 @@ export default function UsersTable() {
                       {status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="flex justify-end gap-3">
+                  <TableCell className="text-right">
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Eye className="h-4 w-4 cursor-pointer text-muted-foreground" />
+                        <Button variant="ghost" size="icon">
+                          <Eye className="h-4 w-4 cursor-pointer text-muted-foreground" />
+                        </Button>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-md">
                         <DialogHeader>
@@ -167,8 +197,38 @@ export default function UsersTable() {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    {/* <Pencil className="h-4 w-4 cursor-pointer text-muted-foreground" />
-                    <Trash2 className="h-4 w-4 cursor-pointer text-muted-foreground" /> */}
+                    <UpdateUser data={userRow} />
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={isPending}
+                        >
+                          <Trash2 className="h-4 w-4 cursor-pointer text-destructive" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you sure you want to delete this user?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete the user and all associated data.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => mutate(userRow.id)}
+                            disabled={isPending}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               );

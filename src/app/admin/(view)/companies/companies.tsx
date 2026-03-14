@@ -50,6 +50,9 @@ interface Company {
   send_welcome_email: number;
   created_at: string;
   updated_at: string;
+  manager: {
+    id: string;
+  };
 }
 
 export default function Companies({
@@ -202,6 +205,14 @@ export default function Companies({
                   <div className="border-t pt-4">
                     <h4 className="font-semibold mb-4">Manager Information</h4>
                     <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Manager ID
+                        </p>
+                        <p className="font-medium">
+                          {selectedCompany?.manager?.id}
+                        </p>
+                      </div>
                       <div>
                         <p className="text-sm text-muted-foreground">
                           Manager Name

@@ -34,6 +34,9 @@ export const getCompaniesApi = async (
       send_welcome_email: number
       created_at: string
       updated_at: string
+      manager:{
+        id:string
+      }
     }>
     first_page_url: string
     from: number
