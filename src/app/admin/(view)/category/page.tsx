@@ -38,6 +38,7 @@ import { idk } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { EditIcon, Loader2Icon, PlusIcon, Trash2Icon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "sonner";
@@ -134,7 +135,10 @@ export default function Page() {
 
   return (
     <section>
-      <h2 className="mb-6 text-2xl">Manage Preference Category</h2>
+      <div className="flex w-full justify-between items-center">
+        <h2 className="mb-6 text-2xl">Manage Preference Category</h2>
+        <Button onClick={() => setOpenAdd(true)}>Add Category</Button>
+      </div>
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">
@@ -166,14 +170,13 @@ export default function Page() {
               </div>
 
               <div>
-                {/* EDIT CATEGORY */}
                 <Dialog
                   open={openEdit[category.id]}
                   onOpenChange={(v) =>
                     setOpenEdit({ ...openEdit, [category.id]: v })
                   }
                 >
-                  {/* <DialogTrigger asChild>
+                  <DialogTrigger asChild>
                     <Button
                       variant="ghost"
                       onClick={() =>
@@ -182,9 +185,9 @@ export default function Page() {
                     >
                       <EditIcon />
                     </Button>
-                  </DialogTrigger> */}
+                  </DialogTrigger>
 
-                  {/* <DialogContent className="min-w-[80dvw]">
+                  <DialogContent className="min-w-[80dvw]">
                     <DialogHeader>
                       <DialogTitle>Edit your category</DialogTitle>
                     </DialogHeader>
@@ -197,11 +200,10 @@ export default function Page() {
                         setOpenEdit({ ...openEdit, [category.id]: false })
                       }
                     />
-                  </DialogContent> */}
+                  </DialogContent>
                 </Dialog>
 
-                {/* DELETE POPUP */}
-                {/* <Popover>
+                <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="ghost">
                       <Trash2Icon />
@@ -226,7 +228,7 @@ export default function Page() {
                       </Button>
                     </div>
                   </PopoverContent>
-                </Popover> */}
+                </Popover>
               </div>
             </div>
           ))}
@@ -302,7 +304,7 @@ export default function Page() {
 function EditCategoryForm({ category, update, qcl, close }: any) {
   const [editFiles, setEditFiles] = useState<File[] | undefined>([]);
   const [editPreview, setEditPreview] = useState<string | null>(
-    category.icon ? imgCreator(category.icon) : null
+    category.icon ? imgCreator(category.icon) : null,
   );
   const [editName, setEditName] = useState(category.name);
 
@@ -330,7 +332,7 @@ function EditCategoryForm({ category, update, qcl, close }: any) {
 
           close(); // 👉 closes the modal properly
         },
-      }
+      },
     );
   };
 

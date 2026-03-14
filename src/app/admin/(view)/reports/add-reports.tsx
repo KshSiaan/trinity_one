@@ -35,7 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { DateRange } from "react-day-picker";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addReportApi } from "@/lib/api/admin";
 import { useCookies } from "react-cookie";
 import { toast } from "sonner";
@@ -79,6 +79,7 @@ const toDefault = faker.date.between({
 
 export default function AddReportsForm() {
   const [{ token }] = useCookies(["token"]);
+  const qcl = useQueryClient();
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
@@ -112,6 +113,7 @@ export default function AddReportsForm() {
     },
     onSuccess: (res: idk) => {
       toast.success(res.message ?? "Success!");
+      qcl.invalidateQueries({ queryKey: ["report"] });
     },
   });
   //watch form schedule
